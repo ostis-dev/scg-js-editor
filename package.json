@@ -1,0 +1,36 @@
+{
+  "name": "scg-js",
+  "version": "0.1.0",
+  "description": "Implementation of scg-language tools for web",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "build": "webpack --progress --colors",
+    "dev": "tsc -watch -p ./",
+    "prepublish": "webpack --debug; webpack -p",
+    "watch": "webpack --progress --colors --watch"
+  },
+  "keywords": [
+    "ostis",
+    "scg"
+  ],
+  "author": "Denis Koronchik <denis.koronchik@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^4.9.1",
+    "jquery": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/d3": "^4.9.0",
+    "@types/jquery": "^2.0.45",
+    "awesome-typescript-loader": "^3.1.3",
+    "source-map-loader": "^0.2.1",
+    "ts-loader": "^2.0.3",
+    "tsc": "^1.20150623.0",
+    "tslint": "^5.2.0",
+    "tslint-loader": "^3.5.3",
+    "typescript": "^2.3.2",
+    "webpack": "^2.5.1",
+    "yargs": "^8.0.1"
+  }
+}
