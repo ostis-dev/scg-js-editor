@@ -1,4 +1,5 @@
-import { D3Selection } from './types';
+import { D3Selection } from './scg_types';
+import { ScType } from './scg_types';
 
 export class SCgAlphabet
 {
@@ -18,6 +19,27 @@ export class SCgAlphabet
 
     private DefRef(name: string) : string {
         return '#' + this.DefName(name);
+    }
+
+    public getDefByType(type: ScType) : string {
+        let result = 'scg';
+        if (type.isNode()) result += '.node';
+
+        if (type.isConst()) {
+            result += '.const';
+        } else if (type.isVar()) {
+            result += '.var';
+        }
+
+        if (type.isClass()) result += '.class';
+        if (type.isAbstract()) result += '.abstract';
+        if (type.isMaterial()) result += '.material';
+        if (type.isNoRole()) result += '.norole';
+        if (type.isRole()) result += '.role';
+        if (type.isStruct()) result += '.struct';
+        if (type.isTuple()) result += '.tuple';
+
+        return this.DefRef(result);
     }
 
     private createDefs() {

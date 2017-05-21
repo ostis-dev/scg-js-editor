@@ -6,4 +6,6 @@ npm install
 npm build
 ```
 
-Result library bould be in `build/scg.js`
+Result library would be in `build/scg.js`
+
+## Usage
