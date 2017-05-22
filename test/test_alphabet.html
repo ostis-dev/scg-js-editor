@@ -12,18 +12,18 @@
         <meta name="format-detection" content="telephone=no">
         <meta name="HandheldFriendly" content="True">
         <meta http-equiv="cleartype" content="on">
-        <title>SCg editor</title>
+        <title>SCg Alphabet</title>
 
         <link href="test.css" rel="stylesheet">
         <script src="../build/scg.js"></script>
     </head>
     <body>
-        <div id="content"></div>
+        <div id="alphabet-content"></div>
         <!-- Main -->
         
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                window.viewer = new SCgViewer('content');
+                window.viewer = new SCgViewer('alphabet-content');
                 window.viewer._testShowAlphabet();
             });
             

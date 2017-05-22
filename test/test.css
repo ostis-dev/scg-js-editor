@@ -9,10 +9,24 @@ body {
     margin: 0px;
 }
 
-#content {
+#alphabet-content {
     width: 100% !important;
     height: 100% !important;
     background-color: #aaa;
     margin: 0 auto;
     overflow: hidden;
+}
+
+#gwf-content {
+    width: 100% !important;
+    height: 100% !important;
+    background-color: #aaa;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+#gwf-selector {
+    position: absolute;
+    right: 0;
+    top: 0;
 }
