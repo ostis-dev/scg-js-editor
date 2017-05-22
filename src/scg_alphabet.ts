@@ -23,7 +23,7 @@ export class SCgAlphabet
         return '#' + this.DefName(name);
     }
 
-    public getDefByType(type: ScType) : string {
+    public getTypeName(type: ScType) : string {
         let result = 'scg';
         if (type.isNode()) result += '.node';
 
@@ -41,7 +41,11 @@ export class SCgAlphabet
         if (type.isStruct()) result += '.struct';
         if (type.isTuple()) result += '.tuple';
 
-        return this.DefRef(result);
+        return result;
+    }
+
+    public getDefByType(type: ScType) : string {
+        return this.DefRef(this.getTypeName(type));
     }
 
     private createDefs() {

@@ -48,8 +48,8 @@ export class SCgViewer
             ScType.NodeVarTuple
         ];
         for (let i = 0; i < testNodes.length; ++i) {
-            let node = this.scene.createNode(testNodes[i], "node_" + i);
-            node.pos = new Vector2(25 + i * 100, 25);
+            let node = this.scene.createNode(testNodes[i], this.render.alphabet.getTypeName(testNodes[i]));
+            node.pos = new Vector2(25, 25 + i * 40);
         }
 
         // edges
@@ -77,9 +77,9 @@ export class SCgViewer
         for (let i = 0; i < testEdges.length; ++i) {
             let src = this.scene.createNode(ScType.Node, "");
             let trg = this.scene.createNode(ScType.Node, "");
-
-            src.pos = new Vector2(25 + i * 50, 100);
-            trg.pos = new Vector2(25 + i * 50, 300);
+            
+            src.pos = new Vector2(325, 25 + i * 35);
+            trg.pos = new Vector2(525, 25 + i * 35);
 
             let edge = this.scene.createEdge(testEdges[i], src, trg);
         }

@@ -70,6 +70,10 @@ export class SCgRender
         this._renderEdgesContainer = this._renderContainer.append('svg:g').attr('type', 'edges').selectAll('path');
     }
 
+    get alphabet() : SCgAlphabet {
+        return this._alphabet;
+    }
+
     private onMouseMove() {
         const pos = d3.mouse(this._container);
     }
