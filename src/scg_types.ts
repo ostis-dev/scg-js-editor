@@ -54,8 +54,12 @@ export class ScType {
         return this.value;
     }
 
-    public hasConstancy() {
+    public hasConstancy() : boolean {
         return (this.value & sc_type_constancy_mask) != 0;
+    }
+
+    public hasDirection() : boolean {
+        return (this.value & sc_type_uedge_common) == 0;
     }
 
     public isNode() : boolean {
@@ -96,6 +100,10 @@ export class ScType {
 
     public isTemp() : boolean {
         return (this.value & sc_type_edge_temp) != 0;
+    }
+
+    public isAccess() : boolean {
+        return (this.value & sc_type_edge_access) != 0;
     }
 
     public isTuple() : boolean {

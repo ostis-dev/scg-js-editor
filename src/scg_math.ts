@@ -3,7 +3,7 @@ export class Vector2 {
     public x: number;
     public y: number;
 
-    constructor(_x = 0, _y = 0) {
+    constructor(_x: number, _y: number) {
         this.x = _x;
         this.y = _y;
     }

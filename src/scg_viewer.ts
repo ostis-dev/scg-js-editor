@@ -49,7 +49,39 @@ export class SCgViewer
         ];
         for (let i = 0; i < testNodes.length; ++i) {
             let node = this.scene.createNode(testNodes[i], "node_" + i);
-            node.pos(new Vector2(100 + i * 50, 100));
+            node.pos = new Vector2(25 + i * 100, 25);
+        }
+
+        // edges
+        let testEdges = [
+            ScType.EdgeAccess,
+            ScType.EdgeDCommon,
+            ScType.EdgeDCommonConst,
+            ScType.EdgeDCommonVar,
+            ScType.EdgeUCommon,
+            ScType.EdgeUCommonConst,
+            ScType.EdgeUCommonVar,
+            ScType.EdgeAccessConstPosPerm,
+            ScType.EdgeAccessConstPosTemp,
+            ScType.EdgeAccessConstNegPerm,
+            ScType.EdgeAccessConstNegTemp,
+            ScType.EdgeAccessConstFuzPerm,
+            ScType.EdgeAccessConstFuzTemp,
+            ScType.EdgeAccessVarPosPerm,
+            ScType.EdgeAccessVarPosTemp,
+            ScType.EdgeAccessVarNegPerm,
+            ScType.EdgeAccessVarNegTemp,
+            ScType.EdgeAccessVarFuzPerm,
+            ScType.EdgeAccessVarFuzTemp
+        ];
+        for (let i = 0; i < testEdges.length; ++i) {
+            let src = this.scene.createNode(ScType.Node, "");
+            let trg = this.scene.createNode(ScType.Node, "");
+
+            src.pos = new Vector2(25 + i * 50, 100);
+            trg.pos = new Vector2(25 + i * 50, 300);
+
+            let edge = this.scene.createEdge(testEdges[i], src, trg);
         }
 
         this.render.update();
