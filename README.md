@@ -8,4 +8,8 @@ npm build
 
 Result library would be in `build/scg.js`
 
+## Contribution
+
+Read `docs/codestyle.md` document before start contributing.
+
 ## Usage
