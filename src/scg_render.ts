@@ -28,8 +28,8 @@ function applyTextStyle(text: D3Selection) {
 
 export class SCgRender
 {
-    private container: any;
-    private alphabet: SCgAlphabet;
+    private _container: any;
+    private _alphabet: SCgAlphabet;
     
     /* Hierarchy of containers
      * render
@@ -37,20 +37,20 @@ export class SCgRender
      *  |- renderNodesContainer
      *  |- renderEdgesContainer
      */
-    private render: D3Selection;
-    private renderContainer: D3Selection;
-    private renderNodesContainer: D3Selection;
-    private renderEdgesContainer: D3Selection;
+    private _render: D3Selection;
+    private _renderContainer: D3Selection;
+    private _renderNodesContainer: D3Selection;
+    private _renderEdgesContainer: D3Selection;
     
-    private scene: SCgScene;
+    private _scene: SCgScene;
 
     constructor(containerID: string, scene: SCgScene)
     {
-        this.container = document.getElementById(containerID)
-        this.scene = scene;
+        this._container = document.getElementById(containerID)
+        this._scene = scene;
         //this.scene.setUpdateCallback(this.update.bind(this));
 
-        this.render = d3.select('#' + containerID)
+        this._render = d3.select('#' + containerID)
             .append('svg:svg')
             .attr("pointer-events", "all")
             .attr("width", "100%")
@@ -59,31 +59,31 @@ export class SCgRender
             .on('mouseup', this.onMouseUp.bind(this))
             .on('mousemove', this.onMouseMove.bind(this))
             .on('dblclick', this.onMouseDoubleClick.bind(this));
-        applyContainerStyle(this.render);
+        applyContainerStyle(this._render);
         
-        this.renderContainer = this.render.append('svg:g');
-        applyContainerStyle(this.renderContainer);
+        this._renderContainer = this._render.append('svg:g');
+        applyContainerStyle(this._renderContainer);
 
-        this.alphabet = new SCgAlphabet(this.render, containerID);
+        this._alphabet = new SCgAlphabet(this._render, containerID);
 
-        this.renderNodesContainer = this.renderContainer.append('svg:g').attr('type', 'nodes').selectAll('g');
-        this.renderEdgesContainer = this.renderContainer.append('svg:g').attr('type', 'edges').selectAll('path');
+        this._renderNodesContainer = this._renderContainer.append('svg:g').attr('type', 'nodes').selectAll('g');
+        this._renderEdgesContainer = this._renderContainer.append('svg:g').attr('type', 'edges').selectAll('path');
     }
 
     private onMouseMove() {
-        const pos = d3.mouse(this.container);
+        const pos = d3.mouse(this._container);
     }
 
     private onMouseDown() {
-        const pos = d3.mouse(this.container);
+        const pos = d3.mouse(this._container);
     }
 
     private onMouseUp() {
-        const pos = d3.mouse(this.container);
+        const pos = d3.mouse(this._container);
     }
 
     private onMouseDoubleClick() {
-        const pos = d3.mouse(this.container);
+        const pos = d3.mouse(this._container);
     }
 
     public update() {
@@ -94,11 +94,11 @@ export class SCgRender
     private updateNodes() {
         // add nodes that haven't visual
         const self = this;
-        this.renderNodesContainer = this.renderNodesContainer
-            .data(this.scene.nodes, function(d) { return d.id; })
+        this._renderNodesContainer = this._renderNodesContainer
+            .data(this._scene.nodes, function(d) { return d.id; })
             .enter();
 
-        let g = this.renderNodesContainer.append('svg:g')
+        let g = this._renderNodesContainer.append('svg:g')
                 .attr("transform", function(d) {
                     return 'translate(' + d.pos.x + ', ' + d.pos.y + ')';
                 })
@@ -108,7 +108,7 @@ export class SCgRender
             
         g.append('svg:use')
             .attr('xlink:href', function(d) {
-                return self.alphabet.getDefByType(d.type);
+                return self._alphabet.getDefByType(d.type);
             });
 
         const text = g.append('svg:text')
@@ -117,18 +117,18 @@ export class SCgRender
             .text(function(d) { return d.text; });
         applyTextStyle(text);
 
-        this.renderNodesContainer.exit().remove();
+        this._renderNodesContainer.exit().remove();
 
-        this.renderNodesContainer.each(function(d) {
+        this._renderNodesContainer.each(function(d) {
              console.log(d);
         });
     }
 
     private updateEdges() {
-        this.renderEdgesContainer = this.renderEdgesContainer.data(this.scene.edges, function(d) { return d.id; });
+        this._renderEdgesContainer = this._renderEdgesContainer.data(this._scene.edges, function(d) { return d.id; });
         
         // add edges that haven't visual
-        let g = this.renderEdgesContainer.enter().append('svg:g')
+        let g = this._renderEdgesContainer.enter().append('svg:g')
             .attr('pointer-events', 'visibleStroke')
             .style('fill', 'none')
             .style('stroke-linejoin', 'round')
@@ -140,10 +140,10 @@ export class SCgRender
             if (!d.isNeedViewUpdate())
                 return; // do nothing
             const d3_edge = d3.select(this);
-            self.alphabet.updateEdge(d, d3_edge);
+            self._alphabet.updateEdge(d, d3_edge);
             d.viewUpdated();
         })
 
-        this.renderEdgesContainer.exit().remove();
+        this._renderEdgesContainer.exit().remove();
     }
 };

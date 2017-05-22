@@ -6,17 +6,17 @@ import { Vector2 } from './scg_math';
 export class SCgAlphabet
 {
     // unique id of render instance (used to prevent problems with equal svg definitions)
-    private id: string;
-    private svgRender: D3Selection;
+    private _id: string;
+    private _svgRender: D3Selection;
 
     constructor(svgRender: D3Selection, id: string) {
-        this.svgRender = svgRender;
-        this.id = id;
+        this._svgRender = svgRender;
+        this._id = id;
         this.createDefs();
     }
 
     private DefName(name: string) : string {
-        return this.id + '-' + name;
+        return this._id + '-' + name;
     }
 
     private DefRef(name: string) : string {
@@ -45,7 +45,7 @@ export class SCgAlphabet
     }
 
     private createDefs() {
-        let defs = this.svgRender.append('svg:defs');
+        let defs = this._svgRender.append('svg:defs');
 
         function appendText(svgDef: D3Selection) {
             svgDef.append('svg:text')

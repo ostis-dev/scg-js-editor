@@ -44,97 +44,97 @@ const sc_type_edge_mask             = (sc_type_edge_access | sc_type_dedge_commo
 
 
 export class ScType {
-    protected value: number;
+    protected _value: number;
 
     constructor(v?: number) {
-        this.value = v ? v : 0;
+        this._value = v ? v : 0;
     }
 
     public getValue() : number {
-        return this.value;
+        return this._value;
     }
 
     public hasConstancy() : boolean {
-        return (this.value & sc_type_constancy_mask) != 0;
+        return (this._value & sc_type_constancy_mask) != 0;
     }
 
     public hasDirection() : boolean {
-        return (this.value & sc_type_uedge_common) == 0;
+        return (this._value & sc_type_uedge_common) == 0;
     }
 
     public isNode() : boolean {
-        return (this.value & sc_type_node) != 0;
+        return (this._value & sc_type_node) != 0;
     }
 
     public isEdge() : boolean {
-        return (this.value & sc_type_edge_mask) != 0;
+        return (this._value & sc_type_edge_mask) != 0;
     }
 
     public isLink() : boolean {
-        return (this.value & sc_type_link) != 0;
+        return (this._value & sc_type_link) != 0;
     }
 
     public isConst() : boolean {
-        return (this.value & sc_type_const) != 0;
+        return (this._value & sc_type_const) != 0;
     }
 
     public isVar() : boolean {
-        return (this.value & sc_type_var) != 0;
+        return (this._value & sc_type_var) != 0;
     }
 
     public isPos() : boolean {
-        return (this.value & sc_type_edge_pos) != 0;
+        return (this._value & sc_type_edge_pos) != 0;
     }
 
     public isNeg() : boolean {
-        return (this.value & sc_type_edge_neg) != 0;
+        return (this._value & sc_type_edge_neg) != 0;
     }
 
     public isFuz() : boolean {
-        return (this.value & sc_type_edge_fuz) != 0;
+        return (this._value & sc_type_edge_fuz) != 0;
     }
 
     public isPerm() : boolean {
-        return (this.value & sc_type_edge_perm) != 0;
+        return (this._value & sc_type_edge_perm) != 0;
     }
 
     public isTemp() : boolean {
-        return (this.value & sc_type_edge_temp) != 0;
+        return (this._value & sc_type_edge_temp) != 0;
     }
 
     public isAccess() : boolean {
-        return (this.value & sc_type_edge_access) != 0;
+        return (this._value & sc_type_edge_access) != 0;
     }
 
     public isTuple() : boolean {
-        return (this.value & sc_type_node_tuple) != 0;
+        return (this._value & sc_type_node_tuple) != 0;
     }
     public isStruct() : boolean {
-        return (this.value & sc_type_node_struct) != 0;
+        return (this._value & sc_type_node_struct) != 0;
     }
 
     public isRole() : boolean {
-        return (this.value & sc_type_node_role) != 0;
+        return (this._value & sc_type_node_role) != 0;
     }
 
     public isNoRole() : boolean {
-        return (this.value & sc_type_node_norole) != 0;
+        return (this._value & sc_type_node_norole) != 0;
     }
 
     public isClass() : boolean {
-        return (this.value & sc_type_node_class) != 0;
+        return (this._value & sc_type_node_class) != 0;
     }
 
     public isAbstract() : boolean {
-        return (this.value & sc_type_node_abstract) != 0;
+        return (this._value & sc_type_node_abstract) != 0;
     }
     
     public isMaterial() : boolean {
-        return (this.value & sc_type_node_material) != 0;
+        return (this._value & sc_type_node_material) != 0;
     }
 
     public equal(other: ScType) : boolean {
-        return (this.value === other.value);
+        return (this._value === other._value);
     }
 
     static readonly EdgeUCommon = new ScType(sc_type_uedge_common);
