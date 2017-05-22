@@ -3,23 +3,24 @@ import { SCgObject, SCgNode, SCgEdge } from './scg_object';
 
 type UpdateCallback = () => void;
 
+let idCounter: number = 0;
+
 export class SCgScene {
     private _nodes: SCgNode[];
     private _edges: SCgEdge[];
 
-    private _idCounter: number;
+    
 
     private _requestUpdate: UpdateCallback;
 
     constructor() {
         this._nodes = [];
         this._edges = [];
-        this._idCounter = 1;
         this._requestUpdate = null;
     }
 
     private nextID() {
-        return this._idCounter++;
+        return idCounter++;
     }
 
     public createNode(type: ScType, text: string) : SCgNode {

@@ -81,12 +81,12 @@ export class SCgAlphabet
             .attr('d', 'M0,-4L10,0L0,4').attr('fill', '#000');
             
         // nodes
-        defs.append('svg:circle').attr('id', _Name('scg.node.const.outer')).attr('cx', '0').attr('cy', '0').attr('r', '10');
-        defs.append('svg:rect').attr('id', _Name('scg.node.var.outer')).attr('x', '-10').attr('y', '-10').attr('width', '20').attr('height', '20');
+        defs.append('svg:circle').attr('id', _Name('scg.node.const.outer')).attr('cx', '0').attr('cy', '0').attr('r', '9');
+        defs.append('svg:rect').attr('id', _Name('scg.node.var.outer')).attr('x', '-9').attr('y', '-9').attr('width', '18').attr('height', '18');
             
         //  ----- define constant nodes -----      
         var g = defs.append('svg:g').attr('id', _Name('scg.node'));
-        g.append('svg:circle').attr('cx', '0').attr('cy', '0').attr('r', '4');
+        g.append('svg:circle').attr('cx', '0').attr('cy', '0').attr('r', '3');
         
         g = defs.append('svg:g').attr('id', _Name('scg.node.const'));
         g.append('svg:use').attr('xlink:href', _Ref('scg.node.const.outer'));
@@ -206,7 +206,6 @@ export class SCgAlphabet
         }
         
         // make position path
-        console.log(srcPos, trgPos);
         let path = 'M' + srcPos.x + ',' + srcPos.y;
         for (let i = 1; i < pointsNum - 1; ++i) {
             path += 'L' + points[i].x + ',' + points[i].y;

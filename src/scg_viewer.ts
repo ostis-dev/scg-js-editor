@@ -3,28 +3,39 @@ import { SCgRender } from './scg_render';
 import { SCgScene } from './scg_scene';
 import { ScType } from './scg_types';
 import { Vector2 } from './scg_math';
+import { SCgLoaderGWF } from './scg_loader_gwf';
 
 import * as d3 from 'd3';
 
 export class SCgViewer
 {
-    private container:any;
+    private _container:any;
 
-    private width: number;
-    private height: number;
+    private _width: number;
+    private _height: number;
 
-    private render: SCgRender;
-    private scene: SCgScene;
+    private _render: SCgRender;
+    private _scene: SCgScene;
 
     constructor(id) {
-        this.container = document.getElementById(id);
+        this._container = document.getElementById(id);
 
-        this.width = this.container.clientWidth;
-        this.height = this.container.clientHeight;
+        this._width = this._container.clientWidth;
+        this._height = this._container.clientHeight;
 
-        this.scene = new SCgScene();
-        this.render = new SCgRender(id, this.scene);
+        this._scene = new SCgScene();
+        this._render = new SCgRender(id, this._scene);
     }
+
+    loadFromData(data: string, format = 'gwf') {
+        if (format === 'gwf') {
+            const loader = new SCgLoaderGWF();
+            this._render.scene = loader.load(data);
+        } else {
+            throw "Unsupported format " + format;
+        }
+    }
+
 
     public _testShowAlphabet() {
         /// test
@@ -48,7 +59,7 @@ export class SCgViewer
             ScType.NodeVarTuple
         ];
         for (let i = 0; i < testNodes.length; ++i) {
-            let node = this.scene.createNode(testNodes[i], this.render.alphabet.getTypeName(testNodes[i]));
+            let node = this._scene.createNode(testNodes[i], this._render.alphabet.getTypeName(testNodes[i]));
             node.pos = new Vector2(25, 25 + i * 40);
         }
 
@@ -75,15 +86,15 @@ export class SCgViewer
             ScType.EdgeAccessVarFuzTemp
         ];
         for (let i = 0; i < testEdges.length; ++i) {
-            let src = this.scene.createNode(ScType.Node, "");
-            let trg = this.scene.createNode(ScType.Node, "");
+            let src = this._scene.createNode(ScType.Node, "");
+            let trg = this._scene.createNode(ScType.Node, "");
             
             src.pos = new Vector2(325, 25 + i * 35);
             trg.pos = new Vector2(525, 25 + i * 35);
 
-            let edge = this.scene.createEdge(testEdges[i], src, trg);
+            let edge = this._scene.createEdge(testEdges[i], src, trg);
         }
 
-        this.render.update();
+        this._render.update();
     }
 };

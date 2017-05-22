@@ -112,7 +112,7 @@ export class SCgNode extends SCgPointObject {
         dv.sub(fromPos);
         const l = dv.len();
         dv.normalize();
-        dv.mulScalar(l - 10);
+        dv.mulScalar(l - 15);
 
         return fromPos.clone().add(dv);
     }
@@ -172,8 +172,44 @@ export class SCgEdge extends SCgLineObject {
         return this._trg;
     }
 
+    get srcRelPos() : number {
+        return this._srcRelPos;
+    }
+
+    set srcRelPos(newPos: number) {
+        this._srcRelPos = newPos;
+        this.requestUpdate();
+    }
+
+    get trgRelPos() : number {
+        return this._trgRelPos;
+    }
+
+    set trgRelPos(newPos: number) {
+        this._trgRelPos = newPos;
+        this.requestUpdate();
+    }
+
     calcConnectionPoint(relPos: number, fromPos: Vector2) : Vector2 {
-        return this.points[0].clone();
+        // calculate relative pos
+        const idx: number = Math.floor(relPos);
+        const offset: number = relPos - idx;
+        let pos: Vector2 = this.points[0].clone();
+
+        if (idx < this.points.length) {
+            let dv: Vector2 = this.points[idx + 1].clone().sub(this.points[idx]);
+            const l: number = dv.len() * offset;
+            dv.normalize();
+            pos = this.points[idx].clone().add(dv.mulScalar(l));
+        }
+
+        const dv: Vector2 = pos.clone();
+        dv.sub(fromPos);
+        const dist = dv.len();
+        dv.normalize();
+        dv.mulScalar(dist - (this.type.isAccess() ? 3 : 5));
+
+        return fromPos.clone().add(dv);
     }
 
     updateImpl() : void {
@@ -181,6 +217,7 @@ export class SCgEdge extends SCgLineObject {
 
         points[0] = this._src.calcConnectionPoint(this._srcRelPos, points[1]);
         points[points.length - 1] = this._trg.calcConnectionPoint(this._trgRelPos, points[points.length - 2]);
+        points[0] = this._src.calcConnectionPoint(this._srcRelPos, points[1]); // find better solution
     }
 
     center() : Vector2 {

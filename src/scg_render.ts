@@ -66,12 +66,21 @@ export class SCgRender
 
         this._alphabet = new SCgAlphabet(this._render, containerID);
 
-        this._renderNodesContainer = this._renderContainer.append('svg:g').attr('type', 'nodes').selectAll('g');
-        this._renderEdgesContainer = this._renderContainer.append('svg:g').attr('type', 'edges').selectAll('path');
+        this.clear();
     }
 
     get alphabet() : SCgAlphabet {
         return this._alphabet;
+    }
+
+    get scene() : SCgScene {
+        return this._scene;
+    }
+
+    set scene(newScene: SCgScene) {
+        this._scene = newScene;
+        this.clear();
+        this.update();
     }
 
     private onMouseMove() {
@@ -93,6 +102,12 @@ export class SCgRender
     public update() {
         this.updateNodes();
         this.updateEdges();
+    }
+
+    public clear() {
+        this._renderContainer.selectAll('g').remove();
+        this._renderNodesContainer = this._renderContainer.append('svg:g').attr('type', 'nodes').selectAll('g');
+        this._renderEdgesContainer = this._renderContainer.append('svg:g').attr('type', 'edges').selectAll('path');
     }
 
     private updateNodes() {
@@ -122,10 +137,6 @@ export class SCgRender
         applyTextStyle(text);
 
         this._renderNodesContainer.exit().remove();
-
-        this._renderNodesContainer.each(function(d) {
-             console.log(d);
-        });
     }
 
     private updateEdges() {

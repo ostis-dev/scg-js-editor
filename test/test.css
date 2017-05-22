@@ -9,6 +9,16 @@ body {
     margin: 0px;
 }
 
+no-error {
+    background-color: #a00;
+    color: #fff;
+}
+
+error {
+    background-color: #0a0;
+    color: #fff;
+}
+
 #alphabet-content {
     width: 100% !important;
     height: 100% !important;
