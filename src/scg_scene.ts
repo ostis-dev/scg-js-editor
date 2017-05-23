@@ -1,21 +1,18 @@
 import { ScType } from './scg_types';
-import { SCgObject, SCgNode, SCgEdge } from './scg_object';
+import { SCgObject, SCgNode, SCgEdge, SCgLink } from './scg_object';
 
 type UpdateCallback = () => void;
 
 let idCounter: number = 0;
 
 export class SCgScene {
-    private _nodes: SCgNode[];
-    private _edges: SCgEdge[];
-
-    
+    private _nodes: SCgNode[] = [];
+    private _edges: SCgEdge[] = [];
+    private _links: SCgLink[] = [];
 
     private _requestUpdate: UpdateCallback;
 
     constructor() {
-        this._nodes = [];
-        this._edges = [];
         this._requestUpdate = null;
     }
 
@@ -35,12 +32,22 @@ export class SCgScene {
         return newEdge;
     }
 
+    public createLink(type = ScType.LinkConst, text?: string) : SCgLink {
+        const newLink = new SCgLink(this.nextID(), text, type);
+        this._links.push(newLink);
+        return newLink;
+    }
+
     get nodes() : SCgNode[] {
         return this._nodes;
     }
 
     get edges() : SCgEdge[] {
         return this._edges;
+    }
+
+    get links() : SCgLink[] {
+        return this._links;
     }
 
     public setUpdateCallback(callback: UpdateCallback) {

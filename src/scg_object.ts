@@ -1,6 +1,7 @@
 
-import { Vector2 } from './scg_math';
+import { Vector2, Rect } from './scg_math';
 import { ScType } from './scg_types';
+import { SCgContentProvider } from './scg_content_provider';
 
 export abstract class SCgObject {
     private _needUpdate: boolean;
@@ -101,10 +102,10 @@ abstract class SCgPointObject extends SCgObject {
 export class SCgNode extends SCgPointObject {
 
     constructor(id: number, text: string, type: ScType) {
+        super(id, text, type);
+
         if (!type.isNode())
             throw "You should use node types there";
-
-        super(id, text, type);
     }
 
     calcConnectionPoint(relPos: number, fromPos: Vector2) : Vector2 {
@@ -150,10 +151,10 @@ export class SCgEdge extends SCgLineObject {
     private _trgRelPos: number;
 
     constructor(id: number, text: string, type: ScType, src: SCgObject, trg: SCgObject) {
+        super(id, text, type);
+
         if (!type.isEdge())
             throw "You should use edge types there";
-        
-        super(id, text, type);
 
         this._src = src;
         this._trg = trg;
@@ -213,6 +214,9 @@ export class SCgEdge extends SCgLineObject {
     }
 
     updateImpl() : void {
+        this._src.update();
+        this._trg.update();
+
         const points: Vector2[] = this.points;
 
         points[0] = this._src.calcConnectionPoint(this._srcRelPos, points[1]);
@@ -222,5 +226,63 @@ export class SCgEdge extends SCgLineObject {
 
     center() : Vector2 {
         return this.points[0];
+    }
+};
+
+export class SCgLink extends SCgPointObject {
+    
+    private _bounds: Rect = new Rect(new Vector2(0, 0), new Vector2(30, 30));
+    private _content: SCgContentProvider = null;
+    private _container: any = null;
+    private _containerWrap: any = null;
+
+    constructor(id: number, text: string, type: ScType) {
+        super(id, text, type);
+
+        if (!type.isLink())
+            throw "You should use link types there";
+    }
+
+    calcConnectionPoint(relPos: number, fromPos: Vector2) : Vector2 {
+        const dv: Vector2 = this.pos.clone();
+        dv.sub(fromPos);
+        const l = dv.len();
+        dv.normalize();
+        dv.mulScalar(l - 15);
+
+        return fromPos.clone().add(dv);
+    }
+
+    updateImpl() : void {
+        // update bounds
+        if (this._content)
+            this._bounds.size = this._content.getContentSize();
+        this._bounds.moveCenter(this.pos);
+    }
+
+    center() : Vector2 {
+        return this.pos;
+    }
+
+    get bounds() : Rect {
+        this.update();
+        return this._bounds;
+    }
+
+    setContent(content: SCgContentProvider) : void {
+        this._content = content;
+        this.requestUpdate();
+    }
+
+    // calls from render (do not call manualy)
+    public setContainer(container: any) : void {
+        this._container = container;
+        if (this._containerWrap)
+            this._containerWrap.remove();
+        this._containerWrap = document.createElement('content');
+        this._container.appendChild(this._containerWrap);
+        if (this._content)
+            this._content.setContainer(this._containerWrap);
+        this.requestViewUpdate();
     }
 };

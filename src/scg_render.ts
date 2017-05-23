@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { D3Selection } from './scg_types';
 import { SCgAlphabet } from './scg_alphabet';
 import { SCgScene } from './scg_scene';
-import { SCgObject, SCgEdge, SCgNode } from './scg_object';
+import { SCgObject, SCgEdge, SCgNode, SCgLink } from './scg_object';
 import { Vector2, Rect } from './scg_math';
 
 function applyContainerStyle(container: D3Selection) {
@@ -42,6 +42,7 @@ export class SCgRender
     private _renderContainer: D3Selection;
     private _renderNodesContainer: D3Selection;
     private _renderEdgesContainer: D3Selection;
+    private _renderLinksContainer: D3Selection;
     
     private _scene: SCgScene;
 
@@ -116,13 +117,15 @@ export class SCgRender
 
     public update() {
         this.updateNodes();
+        this.updateLinks();
         this.updateEdges();
     }
 
     public clear() {
         this._renderContainer.selectAll('g').remove();
-        this._renderNodesContainer = this._renderContainer.append('svg:g').attr('type', 'nodes').selectAll('g');
         this._renderEdgesContainer = this._renderContainer.append('svg:g').attr('type', 'edges').selectAll('path');
+        this._renderNodesContainer = this._renderContainer.append('svg:g').attr('type', 'nodes').selectAll('g');
+        this._renderLinksContainer = this._renderContainer.append('svg:g').attr('type', 'links').selectAll('g');
     }
 
     private updateNodes() {
@@ -146,8 +149,8 @@ export class SCgRender
             });
 
         const text = g.append('svg:text')
-            .attr('x', function(d) { return 15; })
-            .attr('y', function(d) { return 15; })
+            .attr('x', 15)
+            .attr('y', 15)
             .text(function(d) { return d.text; });
         applyTextStyle(text);
 
@@ -175,5 +178,49 @@ export class SCgRender
         })
 
         this._renderEdgesContainer.exit().remove();
+    }
+
+    private updateLinks() {
+        // add links that haven't visual
+        const self = this;
+        this._renderLinksContainer = this._renderLinksContainer
+            .data(this._scene.links, function(d) { return d.id; })
+            .enter();
+
+        let g = this._renderLinksContainer.append('svg:g')
+                .attr("transform", function(d: SCgLink) {
+                    let rc: Rect = d.bounds;
+                    return `translate(${rc.origin.x}, ${rc.origin.y})`;
+                })
+                .style('fill', '#eee')
+                .style('stroke', '#000')
+                .style('stroke-width', '3px');
+            
+        g.append('svg:rect')
+            .attr('width', function(d: SCgLink) { return d.bounds.size.x + 9; })
+            .attr('height', function(d: SCgLink) { return d.bounds.size.y + 9; });
+
+        g.append('svg:foreignObject')
+            .attr('transform', `translate(4.5, 4.5)`)
+            .attr('width', function(d: SCgLink) { d.update(); return d.bounds.size.x; })
+            .attr('height', function(d: SCgLink) { d.update(); return d.bounds.size.y; })
+            .each(function(d: SCgLink) {
+                d.setContainer(this);
+            });
+            // .append("xhtml:body")
+            //     .style("background", "transparent")
+            //     .style("margin", "0 0 0 0")
+            // .html(function(d: SCgLink) {
+                
+            //     return 'test data';
+            // });
+
+        const text = g.append('svg:text')
+            .attr('x', function(d) { return 15; })
+            .attr('y', function(d) { return 15; })
+            .text(function(d) { return d.text; });
+        applyTextStyle(text);
+
+        this._renderLinksContainer.exit().remove();
     }
 };

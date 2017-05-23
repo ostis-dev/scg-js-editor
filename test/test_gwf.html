@@ -40,7 +40,7 @@
             }
 
             let files = [];
-            for (let i = 1; i < 8; ++i)
+            for (let i = 1; i < 9; ++i)
                 files.push('gwf/test_' + i + '.gwf');
 
             document.addEventListener('DOMContentLoaded', function() {
@@ -56,6 +56,7 @@
                 function loadFile(fileName) {
                     httpGetAsync(fileName, function(data) {
                         window.viewer.loadFromData(data);
+                        window.viewer.fitSizeToContent();
                     });
                 }
                 select.onchange = function(){

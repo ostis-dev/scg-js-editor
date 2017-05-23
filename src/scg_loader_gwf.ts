@@ -1,8 +1,16 @@
 import { SCgLoader } from './scg_loader';
 import { SCgScene } from './scg_scene';
-import { SCgObject, SCgNode, SCgEdge } from './scg_object';
+import { SCgObject, SCgNode, SCgEdge, SCgLink } from './scg_object';
 import { ScType } from './scg_types';
 import { Vector2 } from './scg_math';
+import { SCgContentProvider, SCgContentImageProvider, SCgContentHtmlProvider } from './scg_content_provider';
+
+enum ContentType {
+    Text = 1,
+    Int = 2,
+    Float = 3,
+    Image = 4
+};
 
 export class SCgLoaderGWF extends SCgLoader {
 
@@ -92,12 +100,41 @@ export class SCgLoaderGWF extends SCgLoader {
 
             const x = parseInt(xmlNodeItem.attributes['x'].value);
             const y = parseInt(xmlNodeItem.attributes['y'].value);
+            const pos: Vector2 = new Vector2(x, y);
 
-            // create node
-            let node: SCgNode = scene.createNode(nodeType, xmlIdtf);
-            node.pos = new Vector2(x, y);
+            // check if it has content, then create SCgLink
+            const xmlContent: Element = xmlNodeItem.getElementsByTagName('content')[0];
+            const contentType: number = parseInt(xmlContent.attributes['type'].value);
+            if (contentType != 0) {
+                let link: SCgLink = scene.createLink();
+                link.pos = pos;
 
-            parsedElements[xmlID] = node;
+                // set content data
+                const data: string = xmlContent.childNodes[0].nodeValue;
+                const mime: string = xmlContent.attributes['mime_type'].value;
+                let provider: SCgContentProvider = null;
+                switch (contentType) {
+                    case ContentType.Image:
+                        provider = new SCgContentImageProvider();
+                        break;
+                    
+                    default:
+                        provider = new SCgContentHtmlProvider();
+                        break;
+                };
+                if (provider) {
+                    provider.setBase64Data(data, mime);
+                    link.setContent(provider);
+                }
+
+                parsedElements[xmlID] = link;
+            } else {
+                // create node
+                let node: SCgNode = scene.createNode(nodeType, xmlIdtf);
+                node.pos = pos
+
+                parsedElements[xmlID] = node;
+            }
         }
 
         // collect edges for parsing
