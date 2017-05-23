@@ -36,6 +36,10 @@ export class SCgViewer
         }
     }
 
+    fitSizeToContent() {
+        this._render.fitSizeToScontent();
+    }
+
 
     public _testShowAlphabet() {
         /// test

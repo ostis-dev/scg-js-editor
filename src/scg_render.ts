@@ -4,6 +4,7 @@ import { D3Selection } from './scg_types';
 import { SCgAlphabet } from './scg_alphabet';
 import { SCgScene } from './scg_scene';
 import { SCgObject, SCgEdge, SCgNode } from './scg_object';
+import { Vector2, Rect } from './scg_math';
 
 function applyContainerStyle(container: D3Selection) {
     container.style("background-color", "#fff")
@@ -81,6 +82,20 @@ export class SCgRender
         this._scene = newScene;
         this.clear();
         this.update();
+    }
+
+    private getContentBounds() : Rect {
+        const bbox = this._renderContainer.node().getBBox();
+        return new Rect(new Vector2(bbox.x, bbox.y), new Vector2(bbox.width, bbox.height));
+    }
+
+    fitSizeToScontent() {
+        const cr: Rect = this.getContentBounds().adjust(10);
+
+        this._container.style.width = cr.size.x + 'px';
+        this._container.style.height = cr.size.y + 'px';
+        
+        this._renderContainer.attr('transform', `translate(-${cr.origin.x}, -${cr.origin.y})`);
     }
 
     private onMouseMove() {

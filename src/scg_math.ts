@@ -1,50 +1,78 @@
 
 export class Vector2 {
-    public x: number;
-    public y: number;
+    private _x: number;
+    private _y: number;
 
     constructor(_x: number, _y: number) {
-        this.x = _x;
-        this.y = _y;
+        this._x = _x;
+        this._y = _y;
     }
 
     public clone() : Vector2 {
-        return new Vector2(this.x, this.y);
+        return new Vector2(this._x, this._y);
+    }
+
+    get x(): number {
+        return this._x;
+    }
+
+    set x(_x: number) { 
+        this._x = _x;
+    }
+
+    get y() : number {
+        return this._y;
+    }
+
+    set y(_y: number) {
+        this._y = _y;
     }
 
     public add(other: Vector2) : Vector2 {
-        this.x += other.x;
-        this.y += other.y;
+        this._x += other._x;
+        this._y += other._y;
+        return this;
+    }
+
+    public addScalar(v: number) : Vector2 {
+        this._x += v;
+        this._y += v;
         return this;
     }
     
     public sub(other: Vector2) : Vector2 {
-        this.x -= other.x;
-        this.y -= other.y;
+        this._x -= other._x;
+        this._y -= other._y;
+        return this;
+    }
+
+    public subScalar(v: number) : Vector2 {
+        this._x -= v;
+        this._y -= v;
         return this;
     }
     
     public mul(other: Vector2) : Vector2 {
-        this.x *= other.x;
-        this.y *= other.y;
+        this._x *= other._x;
+        this._y *= other._y;
         return this;
     }
     
     public div(other: Vector2) : Vector2 {
-        this.x /= other.x;
-        this.y /= other.y;
+        this._x /= other._x;
+        this._y /= other._y;
         return this;
     }
     
     public mulScalar(v: number) : Vector2 {
-        this.x *= v;
-        this.y *= v;
+        this._x *= v;
+        this._y *= v;
         return this;
     }
     
     public divScalar(v: number) : Vector2 {
-        this.x /= v;
-        this.y /= v;
+        this._x /= v;
+        this._y /= v;
         return this;
     }
     
@@ -53,7 +81,7 @@ export class Vector2 {
     }
     
     public lenSquared() : number {
-        return this.x * this.x + this.y * this.y;
+        return this._x * this._x + this._y * this._y;
     }
     
     public dist(other: Vector2) : number {
@@ -61,8 +89,8 @@ export class Vector2 {
     }
     
     public distSquared(other: Vector2) {
-        const x = this.x - other.x;
-        const y = this.y - other.y;
+        const x = this._x - other._x;
+        const y = this._y - other._y;
         return x * x + y * y;
     }
     
@@ -71,6 +99,52 @@ export class Vector2 {
     }
     
     public dot(other: Vector2) : number {
-        return this.x * other.x + this.y * other.y;
+        return this._x * other._x + this._y * other._y;
     }
 };
+
+export class Rect {
+    private _origin: Vector2;
+    private _size: Vector2;
+
+    constructor(origin: Vector2, size: Vector2) {
+        this._origin = origin.clone();
+        this._size = size.clone();
+    }
+
+    get origin(): Vector2 {
+        return this._origin;
+    }
+
+    set origin(_origin: Vector2) {
+        this._origin = _origin;
+    }
+
+    get size(): Vector2 {
+        return this._size;
+    }
+
+    set size(_size: Vector2) {
+        this._size = _size;
+    }
+
+    adjust(dv: number) : Rect {
+        this._origin.subScalar(dv);
+        this._size.addScalar(2 * dv);
+        return this;
+    }
+
+    center() : Vector2 {
+        return this._origin.clone().add(this._size).divScalar(2.0);
+    }
+
+    translate(offset: Vector2) : Rect {
+        this._origin.add(offset);
+        return this;
+    }
+
+    moveCenter(pos: Vector2) : Rect {
+        this._origin = pos.clone().sub(this._size.clone().divScalar(2.0));
+        return this;
+    }
+}
