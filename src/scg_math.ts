@@ -89,9 +89,9 @@ export class Vector2 {
     }
     
     public distSquared(other: Vector2) {
-        const x = this._x - other._x;
-        const y = this._y - other._y;
-        return x * x + y * y;
+        const _x = this._x - other._x;
+        const _y = this._y - other._y;
+        return _x * _x + _y * _y;
     }
     
     public normalize() : Vector2 {
@@ -107,9 +107,9 @@ export class Rect {
     private _origin: Vector2;
     private _size: Vector2;
 
-    constructor(origin: Vector2, size: Vector2) {
-        this._origin = origin.clone();
-        this._size = size.clone();
+    constructor(_origin: Vector2, _size: Vector2) {
+        this._origin = _origin.clone();
+        this._size = _size.clone();
     }
 
     get origin(): Vector2 {
@@ -128,22 +128,26 @@ export class Rect {
         this._size = _size;
     }
 
-    adjust(dv: number) : Rect {
+    public clone() : Rect {
+        return new Rect(this.origin, this.size);
+    }
+
+    public adjust(dv: number) : Rect {
         this._origin.subScalar(dv);
         this._size.addScalar(2 * dv);
         return this;
     }
 
-    center() : Vector2 {
+    public center() : Vector2 {
         return this._origin.clone().add(this._size).divScalar(2.0);
     }
 
-    translate(offset: Vector2) : Rect {
+    public translate(offset: Vector2) : Rect {
         this._origin.add(offset);
         return this;
     }
 
-    moveCenter(pos: Vector2) : Rect {
+    public moveCenter(pos: Vector2) : Rect {
         this._origin = pos.clone().sub(this._size.clone().divScalar(2.0));
         return this;
     }

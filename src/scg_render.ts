@@ -27,6 +27,12 @@ function applyTextStyle(text: D3Selection) {
         .style('stroke', 'none')
 }
 
+enum SizeMode
+{
+    Normal,
+    FitToContent
+};
+
 export class SCgRender
 {
     private _container: any;
@@ -43,13 +49,14 @@ export class SCgRender
     private _renderNodesContainer: D3Selection;
     private _renderEdgesContainer: D3Selection;
     private _renderLinksContainer: D3Selection;
+
+    private _sizeMode: SizeMode = SizeMode.Normal;
     
     private _scene: SCgScene;
 
     constructor(containerID: string, scene: SCgScene)
     {
         this._container = document.getElementById(containerID)
-        this._scene = scene;
         //this.scene.setUpdateCallback(this.update.bind(this));
 
         this._render = d3.select('#' + containerID)
@@ -68,7 +75,7 @@ export class SCgRender
 
         this._alphabet = new SCgAlphabet(this._render, containerID);
 
-        this.clear();
+        this.scene = scene;
     }
 
     get alphabet() : SCgAlphabet {
@@ -80,7 +87,11 @@ export class SCgRender
     }
 
     set scene(newScene: SCgScene) {
+        if (this._scene)
+            this._scene.onDestroy();
+
         this._scene = newScene;
+        this._scene.updateCallback = this.update.bind(this);
         this.clear();
         this.update();
     }
@@ -90,13 +101,9 @@ export class SCgRender
         return new Rect(new Vector2(bbox.x, bbox.y), new Vector2(bbox.width, bbox.height));
     }
 
-    fitSizeToScontent() {
-        const cr: Rect = this.getContentBounds().adjust(10);
-
-        this._container.style.width = cr.size.x + 'px';
-        this._container.style.height = cr.size.y + 'px';
-        
-        this._renderContainer.attr('transform', `translate(-${cr.origin.x}, -${cr.origin.y})`);
+    fitSizeToContent() {
+        this._sizeMode = SizeMode.FitToContent;
+        this.update();
     }
 
     private onMouseMove() {
@@ -119,6 +126,15 @@ export class SCgRender
         this.updateNodes();
         this.updateLinks();
         this.updateEdges();
+
+        if (this._sizeMode === SizeMode.FitToContent) {
+            const cr: Rect = this.getContentBounds().adjust(10);
+
+            this._container.style.width = cr.size.x + 'px';
+            this._container.style.height = cr.size.y + 'px';
+        
+            this._renderContainer.attr('transform', `translate(${-cr.origin.x}, ${-cr.origin.y})`);
+        }
     }
 
     public clear() {
@@ -188,17 +204,11 @@ export class SCgRender
             .enter();
 
         let g = this._renderLinksContainer.append('svg:g')
-                .attr("transform", function(d: SCgLink) {
-                    let rc: Rect = d.bounds;
-                    return `translate(${rc.origin.x}, ${rc.origin.y})`;
-                })
                 .style('fill', '#eee')
                 .style('stroke', '#000')
                 .style('stroke-width', '3px');
             
-        g.append('svg:rect')
-            .attr('width', function(d: SCgLink) { return d.bounds.size.x + 9; })
-            .attr('height', function(d: SCgLink) { return d.bounds.size.y + 9; });
+        g.append('svg:rect');
 
         g.append('svg:foreignObject')
             .attr('transform', `translate(4.5, 4.5)`)
@@ -207,13 +217,6 @@ export class SCgRender
             .each(function(d: SCgLink) {
                 d.setContainer(this);
             });
-            // .append("xhtml:body")
-            //     .style("background", "transparent")
-            //     .style("margin", "0 0 0 0")
-            // .html(function(d: SCgLink) {
-                
-            //     return 'test data';
-            // });
 
         const text = g.append('svg:text')
             .attr('x', function(d) { return 15; })
@@ -222,5 +225,22 @@ export class SCgRender
         applyTextStyle(text);
 
         this._renderLinksContainer.exit().remove();
+
+        g.each(function(d: SCgLink) {
+            d.update();
+            if (!d.isNeedViewUpdate())
+                return; // do nothing
+
+            const d3_link = d3.select(this);
+            const bounds: Rect = d.bounds.clone().adjust(4);
+
+            d3_link.attr("transform", `translate(${bounds.origin.x}, ${bounds.origin.y})`);
+
+            d3_link.select('rect')
+                .attr('width', `${bounds.size.x}px`)
+                .attr('height', `${bounds.size.y}px`);
+
+            d.viewUpdated();
+        });
     }
 };

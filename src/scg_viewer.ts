@@ -37,7 +37,7 @@ export class SCgViewer
     }
 
     fitSizeToContent() {
-        this._render.fitSizeToScontent();
+        this._render.fitSizeToContent();
     }
 
 

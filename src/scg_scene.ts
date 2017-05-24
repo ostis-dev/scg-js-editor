@@ -1,4 +1,5 @@
 import { ScType } from './scg_types';
+import { SCgRender } from './scg_render';
 import { SCgObject, SCgNode, SCgEdge, SCgLink } from './scg_object';
 
 type UpdateCallback = () => void;
@@ -10,10 +11,13 @@ export class SCgScene {
     private _edges: SCgEdge[] = [];
     private _links: SCgLink[] = [];
 
-    private _requestUpdate: UpdateCallback;
+    private _requestUpdate: number = 0;
+    private _requestUpdateCallback: UpdateCallback = null;
 
     constructor() {
-        this._requestUpdate = null;
+    }
+
+    public onDestroy() {
     }
 
     private nextID() {
@@ -21,19 +25,19 @@ export class SCgScene {
     }
 
     public createNode(type: ScType, text: string) : SCgNode {
-        const newNode = new SCgNode(this.nextID(), text, type);
+        const newNode = new SCgNode(this.nextID(), text, type, this);
         this._nodes.push(newNode);
         return newNode;
     }
 
     public createEdge(type: ScType, src: SCgObject, trg: SCgObject, text?: string) : SCgEdge {
-        const newEdge = new SCgEdge(this.nextID(), text, type, src, trg);
+        const newEdge = new SCgEdge(this.nextID(), text, type, src, trg, this);
         this._edges.push(newEdge);
         return newEdge;
     }
 
     public createLink(type = ScType.LinkConst, text?: string) : SCgLink {
-        const newLink = new SCgLink(this.nextID(), text, type);
+        const newLink = new SCgLink(this.nextID(), text, type, this);
         this._links.push(newLink);
         return newLink;
     }
@@ -50,7 +54,13 @@ export class SCgScene {
         return this._links;
     }
 
-    public setUpdateCallback(callback: UpdateCallback) {
-        this._requestUpdate = callback;
+    public linkChanged() : void {
+        if (this._requestUpdateCallback)
+            this._requestUpdateCallback();
+        this._requestUpdate--;
+    }
+
+    set updateCallback(callback: UpdateCallback) {
+        this._requestUpdateCallback = callback;
     }
 };

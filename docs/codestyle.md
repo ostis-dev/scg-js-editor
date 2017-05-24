@@ -85,3 +85,20 @@ export class MyExportedClass {
 ```
 
 - Do not export classes from module, if they use only in the last one
+
+- For arguments in methods, that has the same name as properties use `_argName` names. In example, if we will use `x` name for argument in constructor, then it would be undefined behavior, because we have `x` getter. So use `_x` argument name:
+```typescript
+class Vector {
+    private _x;
+    private _y;
+
+    constructor(_x: number, _y: number) {
+        this._x = _x;
+        this._y = _y;
+    }
+
+    get x(): number {
+        return this._x;
+    }
+}
+```

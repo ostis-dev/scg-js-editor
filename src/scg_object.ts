@@ -2,28 +2,34 @@
 import { Vector2, Rect } from './scg_math';
 import { ScType } from './scg_types';
 import { SCgContentProvider } from './scg_content_provider';
+import { SCgScene } from './scg_scene';
 
 export abstract class SCgObject {
-    private _needUpdate: boolean;
-    private _needViewUpdate: boolean;
-    private _id: number;
-    private _text: string;
-    private _type: ScType;
+    private _needUpdate: boolean = true;
+    private _needViewUpdate: boolean = true;
+    private _id: number = 0;
+    private _text: string = "";
+    private _type: ScType = ScType.Unknown;
+    private _scene: SCgScene = null;
 
     // list of adjacent objects (for example in/out edges)
-    private adjacentList: SCgObject[];
+    private _adjacentList: SCgObject[] = [];
 
-    constructor(id: number, text: string, type: ScType) {
+    constructor(id: number, text: string, type: ScType, scene: SCgScene) {
         this._needUpdate = true;
         this._needViewUpdate = true;
         this._id = id;
         this._text = text;
         this._type = type;
+        this._scene = scene;
     }
 
     // calls by adjacent objects, in this method internal state should be updated
-    protected requestUpdate() {
+    public requestUpdate() {
         this._needUpdate = true;
+        this._adjacentList.forEach((obj: SCgObject) => {
+            obj.requestUpdate();
+        });
     }
 
     protected requestViewUpdate() {
@@ -67,14 +73,30 @@ export abstract class SCgObject {
         this._text = newText;
         this.requestViewUpdate();
     }
+
+    get scene() : SCgScene {
+        return this._scene;
+    }
+
+    public addAdjacent(obj: SCgObject) : void{
+        if (this._adjacentList.indexOf(obj) <= -1)
+            return;
+        this._adjacentList.push(obj);
+    }
+
+    public removeAdjacent(obj: SCgObject) {
+        const idx = this._adjacentList.indexOf(obj);
+        if (idx > -1)
+            this._adjacentList.splice(idx, 1);
+    }
 };
 
 abstract class SCgPointObject extends SCgObject {
     private _pos: Vector2;
     private _scale: number;
 
-    constructor(id: number, text: string, type: ScType) {
-        super(id, text, type);
+    constructor(id: number, text: string, type: ScType, scene: SCgScene) {
+        super(id, text, type, scene);
 
         this._pos = new Vector2(0, 0);
         this._scale = 1.0;
@@ -101,8 +123,8 @@ abstract class SCgPointObject extends SCgObject {
 
 export class SCgNode extends SCgPointObject {
 
-    constructor(id: number, text: string, type: ScType) {
-        super(id, text, type);
+    constructor(id: number, text: string, type: ScType, scene: SCgScene) {
+        super(id, text, type, scene);
 
         if (!type.isNode())
             throw "You should use node types there";
@@ -130,8 +152,8 @@ export class SCgNode extends SCgPointObject {
 abstract class SCgLineObject extends SCgObject {
     private _points: Vector2[];
 
-    constructor(id: number, text: string, type: ScType) {
-        super(id, text, type);
+    constructor(id: number, text: string, type: ScType, scene: SCgScene) {
+        super(id, text, type, scene);
 
         this._points = [];
     }
@@ -150,14 +172,17 @@ export class SCgEdge extends SCgLineObject {
     private _srcRelPos: number;
     private _trgRelPos: number;
 
-    constructor(id: number, text: string, type: ScType, src: SCgObject, trg: SCgObject) {
-        super(id, text, type);
+    constructor(id: number, text: string, type: ScType, src: SCgObject, trg: SCgObject, scene: SCgScene) {
+        super(id, text, type, scene);
 
         if (!type.isEdge())
             throw "You should use edge types there";
 
         this._src = src;
+        this._src.addAdjacent(this);
         this._trg = trg;
+        this._trg.addAdjacent(this);
+
         this._srcRelPos = 0.0;
         this._trgRelPos = 0.0;
 
@@ -236,8 +261,8 @@ export class SCgLink extends SCgPointObject {
     private _container: any = null;
     private _containerWrap: any = null;
 
-    constructor(id: number, text: string, type: ScType) {
-        super(id, text, type);
+    constructor(id: number, text: string, type: ScType, scene: SCgScene) {
+        super(id, text, type, scene);
 
         if (!type.isLink())
             throw "You should use link types there";
@@ -255,8 +280,9 @@ export class SCgLink extends SCgPointObject {
 
     updateImpl() : void {
         // update bounds
-        if (this._content)
+        if (this._content) {
             this._bounds.size = this._content.getContentSize();
+        }
         this._bounds.moveCenter(this.pos);
     }
 
@@ -271,6 +297,11 @@ export class SCgLink extends SCgPointObject {
 
     setContent(content: SCgContentProvider) : void {
         this._content = content;
+        this._content.link = this;
+        this._content.onChanged = function() {
+            this.requestUpdate();
+            this.scene.linkChanged();
+        }.bind(this);
         this.requestUpdate();
     }
 
