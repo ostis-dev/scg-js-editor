@@ -6,4 +6,10 @@ npm install
 npm build
 ```
 
-Result library bould be in `build/scg.js`
+Result library would be in `build/scg.js`
+
+## Contribution
+
+Read `docs/codestyle.md` document before start contributing.
+
+## Usage

@@ -1,3 +1,3 @@
-import { SCgViewer } from './viewer';
+import { SCgViewer } from './scg_viewer';
 
 export { SCgViewer };
