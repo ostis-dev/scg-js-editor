@@ -161,6 +161,12 @@ abstract class SCgLineObject extends SCgObject {
     get points() : Vector2[] {
         return this._points;
     }
+
+    public setIntermediatePoints(_points: Vector2[]) : void {
+        const newPoints = [].concat(this._points[0], _points, this._points[this._points.length - 1]);
+        this._points = newPoints;
+        this.requestUpdate();
+    }
 };
 
 export class SCgEdge extends SCgLineObject {
