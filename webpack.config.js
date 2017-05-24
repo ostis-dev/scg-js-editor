@@ -1,9 +1,11 @@
 var webpack = require("webpack");
 
+var PROD = parseInt(process.env.BUILD_MIN || '0');
+
 module.exports = {
     entry: "./src/index.ts",
     output: {
-        filename: "scg.js",
+        filename: PROD ? "scg.min.js" : "scg.js",
         path: __dirname + "/build",
         libraryTarget: 'umd'
     },
@@ -16,10 +18,10 @@ module.exports = {
         extensions: [".ts", ".tsx", ".js", ".css", ".less"]
     },
 
-    plugins: [
-        //new webpack.optimize.UglifyJsPlugin({minimize: true})
-    ],
-
+    plugins: PROD ? [
+        new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false } })
+    ] : [],
+    
     module: {
         rules: [
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
