@@ -64,11 +64,14 @@ export abstract class SCgContentCommonProvider extends SCgContentProvider {
             const width: number = parseInt(document.defaultView.getComputedStyle(self._container, "").getPropertyValue("width").replace('px', ''));
             const height: number = parseInt(document.defaultView.getComputedStyle(self._container, "").getPropertyValue("height").replace('px', ''));
 
+            self._container.style.position = 'static';
+            self._container.style.display = 'block';
+
             self._container.remove();
             self._container.style.visibility = 'visible';
 
-            self._size.x = width;
-            self._size.y = height
+            self._size.x = width + 1;
+            self._size.y = height + 1;
 
             if (self._changedCallback)
                 self._changedCallback();

@@ -166,16 +166,33 @@ export class SCgLoaderGWF extends SCgLoader {
                 }
 
                 // parse and create edge
-               const xmlID: string = el.attributes['id'].value;
-               const xmlIdtf: string = el.attributes['idtf'].value;
-               const edgeType: ScType = this.resolveEdgeType(el.attributes['type'].value);
+                const xmlID: string = el.attributes['id'].value;
+                const xmlIdtf: string = el.attributes['idtf'].value;
+                const edgeType: ScType = this.resolveEdgeType(el.attributes['type'].value);
 
-               let edge: SCgEdge = scene.createEdge(edgeType, src, trg, xmlIdtf);
-               parsedElements[xmlID] = edge;
+                let edge: SCgEdge = scene.createEdge(edgeType, src, trg, xmlIdtf);
+                parsedElements[xmlID] = edge;
 
-               // parse edge source/target relative positions
-               edge.srcRelPos = parseFloat(el.attributes['dotBBalance'].value);
-               edge.trgRelPos = parseFloat(el.attributes['dotEBalance'].value);
+                // parse edge source/target relative positions
+                edge.srcRelPos = parseFloat(el.attributes['dotBBalance'].value);
+                edge.trgRelPos = parseFloat(el.attributes['dotEBalance'].value);
+
+                // parse intermediate points
+                const xmlPoints = el.getElementsByTagName('points');
+                if (xmlPoints.length > 0) {
+                    // read points
+                    let points: Vector2[] = [];
+                    const xmlList = xmlPoints[0].getElementsByTagName('point');
+                    for (let i = 0; i < xmlList.length; ++i) {
+                        const xmlItem = xmlList[i];
+                        const x = parseFloat(xmlItem.attributes['x'].value);
+                        const y = parseFloat(xmlItem.attributes['y'].value);
+                        points.push(new Vector2(x, y));
+                    }
+
+                    if (points.length > 0)
+                        edge.setIntermediatePoints(points);
+                }
 
                anyParsed = true;
             }
