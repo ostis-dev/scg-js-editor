@@ -112,6 +112,22 @@ export class Rect {
         this._size = _size.clone();
     }
 
+    get leftTop() : Vector2 {
+        return this._origin.clone();
+    }
+
+    get rightTop() : Vector2 {
+        return new Vector2(this._origin.x + this._size.x, this._origin.y);
+    }
+
+    get rightBottom() : Vector2 {
+        return new Vector2(this._origin.x + this._size.x, this._origin.y + this._size.y);
+    }
+
+    get leftBottom() : Vector2 {
+        return new Vector2(this._origin.x, this._origin.y + this._size.y);
+    }
+
     get origin(): Vector2 {
         return this._origin;
     }
@@ -150,5 +166,77 @@ export class Rect {
     public moveCenter(pos: Vector2) : Rect {
         this._origin = pos.clone().sub(this._size.clone().divScalar(2.0));
         return this;
+    }
+}
+
+export class Line {
+    private _src: Vector2 = null;
+    private _trg: Vector2 = null;
+
+    constructor(_src: Vector2, _trg: Vector2) {
+        this._src = _src;
+        this._trg = _trg;
+    }
+
+    public intersect(other: Line): Vector2 {
+        const x1 = this._src.x; const y1 = this._src.y;
+        const x2 = this._trg.x; const y2 = this._trg.y;
+        const x3 = other._src.x; const y3 = other._src.y;
+        const x4 = other._trg.x; const y4 = other._trg.y;
+
+        const denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+        if (denom == 0) {
+            return null;
+        }
+        const ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+        const ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+        return new Vector2(x1 + ua * (x2 - x1), y1 + ua * (y2 - y1));
+    }
+}
+
+export class LineSegment {
+    private _src: Vector2 = null
+    private _trg: Vector2 = null;
+
+    /**
+     * Represents a line segment
+     * @constructor
+     * @param _src - source point
+     * @param _trg - target point
+     */
+    constructor(_src: Vector2, _trg: Vector2) {
+        this._src = _src;
+        this._trg = _trg;
+    }
+
+    /**
+     * Find intersection between this line segment and other one
+     * @param other - line segment to find intersection
+     * @returns If intersection found, then returns intersection point; otherwise returns null
+     */
+    public intersect(other: LineSegment) : Vector2 {
+        const preRes: Vector2 = new Line(this._src, this._trg).intersect(new Line(other._src, other._trg));
+
+        if (preRes) {
+            if (this._src.x > this._trg.x) {
+                if (this._src.x < preRes.x || this._trg.x > preRes.x)
+                    return null;
+            } else {
+                if (this._src.x > preRes.x || this._trg.x < preRes.x)
+                    return null;
+            }
+
+            if (this._src.y > this._trg.y) {
+                if (this._src.y < preRes.y || this._trg.y > preRes.y)
+                    return null;
+            } else {
+                if (this._src.y > preRes.y || this._trg.y < preRes.y)
+                    return null;
+            }
+
+            return preRes;
+        }
+
+        return null;
     }
 }

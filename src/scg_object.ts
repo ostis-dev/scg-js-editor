@@ -1,5 +1,5 @@
 
-import { Vector2, Rect } from './scg_math';
+import { Vector2, Rect, LineSegment } from './scg_math';
 import { ScType } from './scg_types';
 import { SCgContentProvider } from './scg_content_provider';
 import { SCgScene } from './scg_scene';
@@ -274,12 +274,40 @@ export class SCgLink extends SCgPointObject {
             throw "You should use link types there";
     }
 
+    private findSegmentIntersection(segment: LineSegment) : Vector2 {
+        const bbox: Rect = this._bounds.clone().adjust(5);
+        
+        const lt: Vector2 = bbox.leftTop;
+        const rt: Vector2 = bbox.rightTop;
+        const lb: Vector2 = bbox.leftBottom;
+        const rb: Vector2 = bbox.rightBottom;
+
+        // TODO: maybe use Cohen-Sutherland algorithm instead
+
+        const lines: LineSegment[] = [
+            new LineSegment(lt, rt),
+            new LineSegment(rt, rb),
+            new LineSegment(rb, lb),
+            new LineSegment(lb, lt)
+        ];
+
+        for (let i = 0; i < lines.length; ++i) {
+            const res: Vector2 = segment.intersect(lines[i]);
+            if (res)
+                return res;
+        }
+        return null;
+    }
+
     calcConnectionPoint(relPos: number, fromPos: Vector2) : Vector2 {
-        const dv: Vector2 = this.pos.clone();
+        const segment: LineSegment = new LineSegment(fromPos.clone(), this.pos.clone());
+        const inter: Vector2 = this.findSegmentIntersection(segment);
+
+        const dv: Vector2 = inter ? inter : this.pos.clone();
         dv.sub(fromPos);
-        const l = dv.len();
+        const offset = dv.len();
         dv.normalize();
-        dv.mulScalar(l - 15);
+        dv.mulScalar(offset - 5);
 
         return fromPos.clone().add(dv);
     }
