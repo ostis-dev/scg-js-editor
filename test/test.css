@@ -20,6 +20,10 @@ error {
     color: #fff;
 }
 
+.hidden {
+    display: none;
+}
+
 #alphabet-content {
     width: 100% !important;
     height: 100% !important;
@@ -40,4 +44,100 @@ error {
     position: absolute;
     right: 0;
     top: 0;
+}
+
+.test-list-container {
+    width: 250px;
+    margin: 0 auto;
+}
+
+.test-wrap-container {
+    height: 100%;
+    width: 100%;
+}
+
+.test-container {
+    width: 100%;
+    height: 100%;
+}
+
+.test-select {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.test-select ul {
+    list-style-type: none;
+}
+
+.test-select a {
+    font-family: 'Arial';
+    font-weight: bold;
+    display: inline-block;
+    width: 100%;
+    cursor: pointer;
+    padding: 10px 10px;
+    margin-bottom: 5px;
+    outline: 0;
+    border: 0px solid #888888;
+    background: #E6E6E6;
+    color: #005EB3;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-transform: uppercase;
+}
+
+.test-select a:hover {
+    background: #c6c6c6;
+}
+
+.test-select select {
+    font-family: 'Arial';
+    display: inline-block;
+    width: 100%;
+    cursor: pointer;
+    padding: 10px 15px;
+    outline: 0;
+    border: 0px solid #888888;
+    border-radius: 5px;
+    background: #E6E6E6;
+    color: #005EB3;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.test-select select::-ms-expand {
+    display: none;
+}
+.test-select select:hover,
+.test-select select:focus {
+    color: #000000;
+    background: #CCCCCC;
+}
+.test-select select:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.test_select_arrow {
+    position: absolute;
+    top: 16px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    border-style: solid;
+    border-width: 8px 5px 0px 5px;
+    border-color: #7B7B7B transparent transparent transparent;
+}
+.test-select select:hover ~ .test_select_arrow,
+.test-select select:focus ~ .test_select_arrow {
+    border-top-color: #000000;
+}
+.test-select select:disabled ~ .test_select_arrow {
+    border-top-color: #CCCCCC;
 }
