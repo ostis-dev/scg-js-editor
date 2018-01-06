@@ -155,7 +155,7 @@ export class Rect {
   }
 
   public center(): Vector2 {
-    return this._origin.clone().add(this._size).divScalar(2.0);
+    return this._origin.clone().add(this._size.clone().divScalar(2.0));
   }
 
   public translate(offset: Vector2): Rect {
@@ -166,6 +166,38 @@ export class Rect {
   public moveCenter(pos: Vector2): Rect {
     this._origin = pos.clone().sub(this._size.clone().divScalar(2.0));
     return this;
+  }
+
+  public intersectRayFromCenter(trgPoint: Vector2) {
+    const slope = (this._origin.y - trgPoint.y) / (this._origin.x - trgPoint.x);
+    const hsw = slope * this._size.x / 2;
+    const hsh = ( this._size.y / 2 ) / slope;
+    const hh = this._size.y / 2;
+    const hw = this._size.x / 2;
+    
+    if (-hh <= hsw && hsw <= hh) {
+      // line intersects
+      if (this._origin.x < trgPoint.x) {
+        // right edge;
+        const edge: Line = new Line(this.rightTop, this.rightBottom);
+        return edge.intersect(new Line(trgPoint, this.center()));
+      } else if (this._origin.x > trgPoint.x) {
+        // left edge
+        const edge: Line = new Line(this.leftTop, this.leftBottom);
+        return  edge.intersect(new Line(trgPoint, this.center()));
+      }
+    }
+    if (-hw <= hsh && hsh <= hw) {
+      if (this._origin.y < trgPoint.y) {
+        // bottom edge
+        const edge: Line = new Line(this.leftBottom, this.rightBottom);
+        return edge.intersect(new Line(trgPoint, this.center()));
+      } else if (this._origin.y > trgPoint.y) {
+        // top edge
+        const edge: Line = new Line(this.leftTop, this.rightTop);
+        return edge.intersect(new Line(trgPoint, this.center()));
+      }
+    }
   }
 }
 
@@ -218,19 +250,19 @@ export class LineSegment {
     const preRes: Vector2 = new Line(this._src, this._trg).intersect(new Line(other._src, other._trg));
 
     if (preRes) {
-      if (this._src.x > this._trg.x) {
-        if (this._src.x < preRes.x || this._trg.x > preRes.x)
+      if (this._src.x < this._trg.x) {
+        if (preRes.x < this._src.x || preRes.x > this._trg.x)
           return null;
       } else {
-        if (this._src.x > preRes.x || this._trg.x < preRes.x)
+        if (preRes.x < this._trg.x || preRes.x > this._src.x)
           return null;
       }
 
-      if (this._src.y > this._trg.y) {
-        if (this._src.y < preRes.y || this._trg.y > preRes.y)
+      if (this._src.y < this._trg.y) {
+        if (preRes.y < this._src.y || preRes.y > this._trg.y)
           return null;
       } else {
-        if (this._src.y > preRes.y || this._trg.y < preRes.y)
+        if (preRes.y < this._trg.y || preRes.y > this._src.y)
           return null;
       }
 

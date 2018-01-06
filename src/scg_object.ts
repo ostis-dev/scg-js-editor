@@ -26,6 +26,9 @@ export abstract class SCgObject {
 
   // calls by adjacent objects, in this method internal state should be updated
   public requestUpdate() {
+    if (this._needUpdate)
+      return; // do nothing
+
     this._needUpdate = true;
     this._adjacentList.forEach((obj: SCgObject) => {
       obj.requestUpdate();
@@ -50,7 +53,8 @@ export abstract class SCgObject {
 
   // updates object
   public update() {
-    if (!this._needUpdate) return; // do nothing
+    if (!this._needUpdate)
+      return; // do nothing
 
     this.updateImpl();
     this._needUpdate = false;
@@ -79,7 +83,7 @@ export abstract class SCgObject {
   }
 
   public addAdjacent(obj: SCgObject): void {
-    if (this._adjacentList.indexOf(obj) <= -1)
+    if (this._adjacentList.indexOf(obj) > -1)
       return;
     this._adjacentList.push(obj);
   }
@@ -89,9 +93,13 @@ export abstract class SCgObject {
     if (idx > -1)
       this._adjacentList.splice(idx, 1);
   }
+
+  public get adjacentCount(): number {
+    return this._adjacentList.length;
+  }
 };
 
-abstract class SCgPointObject extends SCgObject {
+export abstract class SCgPointObject extends SCgObject {
   private _pos: Vector2;
   private _scale: number;
 
@@ -196,6 +204,17 @@ export class SCgEdge extends SCgLineObject {
     this.points.push(this._trg.center().clone());
   }
 
+  public midPoint(): Vector2 {
+    // TODO: support polyline
+    const v: Vector2 = this.points[1].clone().sub(this.points[0]);
+    return v.divScalar(2.0).add(this.points[0]);
+  }
+
+  // Remove all intermediate points
+  public makeSimple(): void {
+    this.setIntermediatePoints([]);
+  }
+
   get src(): SCgObject {
     return this._src;
   }
@@ -274,40 +293,15 @@ export class SCgLink extends SCgPointObject {
       throw "You should use link types there";
   }
 
-  private findSegmentIntersection(segment: LineSegment): Vector2 {
-    const bbox: Rect = this._bounds.clone().adjust(5);
-
-    const lt: Vector2 = bbox.leftTop;
-    const rt: Vector2 = bbox.rightTop;
-    const lb: Vector2 = bbox.leftBottom;
-    const rb: Vector2 = bbox.rightBottom;
-
-    // TODO: maybe use Cohen-Sutherland algorithm instead
-
-    const lines: LineSegment[] = [
-      new LineSegment(lt, rt),
-      new LineSegment(rt, rb),
-      new LineSegment(rb, lb),
-      new LineSegment(lb, lt)
-    ];
-
-    for (let i = 0; i < lines.length; ++i) {
-      const res: Vector2 = segment.intersect(lines[i]);
-      if (res)
-        return res;
-    }
-    return null;
-  }
-
   calcConnectionPoint(relPos: number, fromPos: Vector2): Vector2 {
     const segment: LineSegment = new LineSegment(fromPos.clone(), this.pos.clone());
-    const inter: Vector2 = this.findSegmentIntersection(segment);
+    const inter: Vector2 = this._bounds.clone().adjust(5).intersectRayFromCenter(fromPos);
 
     const dv: Vector2 = inter ? inter : this.pos.clone();
     dv.sub(fromPos);
     const offset = dv.len();
     dv.normalize();
-    dv.mulScalar(offset - 5);
+    dv.mulScalar(offset - 10);
 
     return fromPos.clone().add(dv);
   }
@@ -334,7 +328,7 @@ export class SCgLink extends SCgPointObject {
     this._content.link = this;
     this._content.onChanged = function () {
       this.requestUpdate();
-      this.scene.linkChanged();
+      this.scene.viewUpdate();
     }.bind(this);
     this.requestUpdate();
   }

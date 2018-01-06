@@ -7,6 +7,7 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
 
+app.use("/gwf/file/", express.static(__dirname + "/gwf"));
 
 // home
 app.get('/static/scg.js', function(req, res) {
@@ -25,19 +26,38 @@ app.get('/', function(req, res) {
     res.render('index');
 });
 
-app.get('/gwf/list', function(req, res) {
+function get_gwf_files(p) {
     var files = [];
-    fs.readdirSync(path.join(__dirname, 'gwf')).forEach(f => {
-        files.push(f);
+    var gwf_path = path.join(__dirname, 'gwf');
+    if (p) {
+        gwf_path = path.join(gwf_path, p);
+    }
+
+    fs.readdirSync(gwf_path).forEach(f => {
+        stat = fs.statSync(path.join(gwf_path, f))
+        if (stat.isFile()) {
+            files.push(f);
+        }
     });
+    return files;
+}
+
+app.get('/gwf/list', function(req, res) {
+    var files = get_gwf_files(null);
     res.writeHead(200, {"Content-Type": "application/json"});
     res.end(JSON.stringify(files));
 });
 
-app.get('/gwf/file/:filename', function(req, res) {
-    var filename = req.params.filename;
-    res.sendFile(path.join(__dirname, 'gwf/' + filename));
+app.get('/gwf/list/:path', function(req, res) {
+    var files = get_gwf_files(req.params.path);
+    res.writeHead(200, {"Content-Type": "application/json"});
+    res.end(JSON.stringify(files));
 });
+
+// app.get('/gwf/file/:filename', function(req, res) {
+//     var filename = req.params.filename;
+//     res.sendFile(path.join(__dirname, 'gwf/' + filename));
+// });
 
 app.get('/test/list', function(req, res) {
     var files = [];

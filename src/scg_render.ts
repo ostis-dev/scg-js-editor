@@ -98,6 +98,11 @@ export class SCgRender {
     return new Rect(new Vector2(bbox.x, bbox.y), new Vector2(bbox.width, bbox.height));
   }
 
+  public get viewSize(): Vector2 {
+    const rc = this._render.node().getBoundingClientRect();
+    return new Vector2(rc.width, rc.height);
+  }
+
   fitSizeToContent() {
     this._sizeMode = SizeMode.FitToContent;
     this.update();
@@ -145,99 +150,109 @@ export class SCgRender {
     // add nodes that haven't visual
     const self = this;
     this._renderNodesContainer = this._renderNodesContainer
-      .data(this._scene.nodes, function (d) { return d.id; })
-      .enter();
+      .data(this._scene.nodes, d => d.id);
 
-    let g = this._renderNodesContainer.append('svg:g')
-      .attr("transform", function (d) {
-        return 'translate(' + d.pos.x + ', ' + d.pos.y + ')';
-      })
+    this._renderNodesContainer.exit().remove();
+
+    const nodesEnter = this._renderNodesContainer.enter().append('svg:g')
       .style('fill', function (d) { return d.type.hasConstancy() ? '#eee' : '#000'; })
       .style('stroke', '#000')
       .style('stroke-width', '5px');
 
-    g.append('svg:use')
+    nodesEnter.append('svg:use')
       .attr('xlink:href', function (d) {
         return self._alphabet.getDefByType(d.type);
       });
 
-    const text = g.append('svg:text')
+    const text = nodesEnter.append('svg:text')
       .attr('x', 15)
       .attr('y', 15)
       .text(function (d) { return d.text; });
     applyTextStyle(text);
 
-    this._renderNodesContainer.exit().remove();
+    this._renderNodesContainer = this._renderNodesContainer.merge(nodesEnter)
+      .attr("transform", function (d) {
+        return 'translate(' + d.pos.x + ', ' + d.pos.y + ')';
+      })
+      .each(d => d.viewUpdated());
   }
 
   private updateEdges() {
-    this._renderEdgesContainer = this._renderEdgesContainer.data(this._scene.edges, function (d) { return d.id; });
+    this._renderEdgesContainer = this._renderEdgesContainer
+      .data(this._scene.edges, function (d) { return d.id; });
+
+    this._renderEdgesContainer.exit().remove();
 
     // add edges that haven't visual
-    let g = this._renderEdgesContainer.enter().append('svg:g')
+    const edgesEnter  = this._renderEdgesContainer.enter().append('svg:g')
       .attr('pointer-events', 'visibleStroke')
       .style('fill', 'none')
       .style('stroke-linejoin', 'round')
 
-
     const self = this;
-    g.each(function (d) {
-      d.update();
-      if (!d.isNeedViewUpdate())
-        return; // do nothing
-      const d3_edge = d3.select(this);
-      self._alphabet.updateEdge(d, d3_edge);
-      d.viewUpdated();
-    })
-
-    this._renderEdgesContainer.exit().remove();
+    this._renderEdgesContainer = this._renderEdgesContainer.merge(edgesEnter)
+      .each(function (d) {
+        d.update();
+        if (!d.isNeedViewUpdate())
+          return; // do nothing
+        const d3_edge = d3.select(this);
+        self._alphabet.updateEdge(d, d3_edge);
+        d.viewUpdated();
+      });
   }
 
   private updateLinks() {
     // add links that haven't visual
     const self = this;
     this._renderLinksContainer = this._renderLinksContainer
-      .data(this._scene.links, function (d) { return d.id; })
-      .enter();
+      .data(this._scene.links, function (d) { return d.id; });
 
-    let g = this._renderLinksContainer.append('svg:g')
+    this._renderLinksContainer.exit().remove();
+
+    const linksEnter  = this._renderLinksContainer.enter().append('svg:g')
       .style('fill', '#eee')
       .style('stroke', '#000')
       .style('stroke-width', '3px');
 
-    g.append('svg:rect');
+    linksEnter
+      .append('svg:rect');
 
-    g.append('svg:foreignObject')
+    linksEnter
+      .append('svg:foreignObject')
       .attr('transform', `translate(4.5, 4.5)`)
-      .attr('width', function (d: SCgLink) { d.update(); return d.bounds.size.x; })
-      .attr('height', function (d: SCgLink) { d.update(); return d.bounds.size.y; })
       .each(function (d: SCgLink) {
         d.setContainer(this);
       });
 
-    const text = g.append('svg:text')
+    const text = linksEnter.append('svg:text')
       .attr('x', function (d) { return 15; })
       .attr('y', function (d) { return 15; })
       .text(function (d) { return d.text; });
     applyTextStyle(text);
 
-    this._renderLinksContainer.exit().remove();
+    this._renderLinksContainer = this._renderLinksContainer.merge(linksEnter)
+      .each(function (d: SCgLink) {
+        d.update();
+        if (!d.isNeedViewUpdate())
+          return; // do nothing
 
-    g.each(function (d: SCgLink) {
-      d.update();
-      if (!d.isNeedViewUpdate())
-        return; // do nothing
+        const d3_link = d3.select(this);
+        const bounds: Rect = d.bounds.clone().adjust(4);
 
-      const d3_link = d3.select(this);
-      const bounds: Rect = d.bounds.clone().adjust(4);
+        d3_link.attr("transform", `translate(${bounds.origin.x}, ${bounds.origin.y})`);
 
-      d3_link.attr("transform", `translate(${bounds.origin.x}, ${bounds.origin.y})`);
+        d3_link.select('rect')
+          .attr('width', `${bounds.size.x}px`)
+          .attr('height', `${bounds.size.y}px`);
 
-      d3_link.select('rect')
-        .attr('width', `${bounds.size.x}px`)
-        .attr('height', `${bounds.size.y}px`);
+        d3_link.select('foreignObject')
+          .attr('width', function (l: SCgLink) { return l.bounds.size.x; })
+          .attr('height', function (l: SCgLink) { return l.bounds.size.y; })
+          .each(function (d: SCgLink) {
+            d.setContainer(this);
+          });
 
-      d.viewUpdated();
-    });
+        d.viewUpdated();
+      });
   }
 };

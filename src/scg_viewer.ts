@@ -6,6 +6,7 @@ import { Vector2 } from './scg_math';
 import { SCgLoaderGWF } from './scg_loader_gwf';
 
 import * as d3 from 'd3';
+import { SCgLayoutForce } from './layouts/scg_layout_force';
 
 export class SCgViewer {
   private _container: any;
@@ -24,12 +25,15 @@ export class SCgViewer {
 
     this._scene = new SCgScene();
     this._render = new SCgRender(id, this._scene);
+    this._scene.render = this._render;
   }
 
   loadFromData(data: string, format = 'gwf') {
     if (format === 'gwf') {
       const loader = new SCgLoaderGWF();
-      this._render.scene = loader.load(data);
+      this._scene =  loader.load(data);
+      this._render.scene = this._scene;
+      this._scene.render = this._render;
     } else {
       throw "Unsupported format " + format;
     }
@@ -39,6 +43,10 @@ export class SCgViewer {
     this._render.fitSizeToContent();
   }
 
+  layout() : void {
+    const layout: SCgLayoutForce = new SCgLayoutForce(this._scene);
+    layout.start();
+  }
 
   public _testShowAlphabet() {
     /// test

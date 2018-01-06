@@ -10,6 +10,7 @@ export class SCgScene {
   private _nodes: SCgNode[] = [];
   private _edges: SCgEdge[] = [];
   private _links: SCgLink[] = [];
+  private _render: SCgRender = null;
 
   private _requestUpdate: number = 0;
   private _requestUpdateCallback: UpdateCallback = null;
@@ -42,6 +43,14 @@ export class SCgScene {
     return newLink;
   }
 
+  get render(): SCgRender {
+    return this._render;
+  }
+
+  set render(r: SCgRender) {
+    this._render = r;
+  }
+
   get nodes(): SCgNode[] {
     return this._nodes;
   }
@@ -54,7 +63,7 @@ export class SCgScene {
     return this._links;
   }
 
-  public linkChanged(): void {
+  public viewUpdate(): void {
     if (this._requestUpdateCallback)
       this._requestUpdateCallback();
     this._requestUpdate--;
