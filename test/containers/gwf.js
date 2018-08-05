@@ -1,9 +1,4 @@
 
-/* <div id="gwf-content"></div>
-<div id="gwf-selector">
-  <select id="gwf-selector-list"></select>
-</div> */
-
 function createGWFHtml(container) {
     let c = document.createElement('div');
     c.id = 'gwf-content';

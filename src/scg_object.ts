@@ -1,12 +1,13 @@
 
 import { Vector2, Rect, LineSegment } from './scg_math';
-import { ScType } from './scg_types';
+import { ScType, ScAddr } from './scg_types';
 import { SCgContentProvider } from './scg_content_provider';
 import { SCgScene } from './scg_scene';
 
 export abstract class SCgObject {
   private _needUpdate: boolean = true;
   private _needViewUpdate: boolean = true;
+  private _addr: ScAddr = new ScAddr();
   private _id: number = 0;
   private _text: string = "";
   private _type: ScType = ScType.Unknown;
@@ -15,13 +16,14 @@ export abstract class SCgObject {
   // list of adjacent objects (for example in/out edges)
   private _adjacentList: SCgObject[] = [];
 
-  constructor(id: number, text: string, type: ScType, scene: SCgScene) {
+  constructor(id: number, text: string, type: ScType, scene: SCgScene, addr?: ScAddr) {
     this._needUpdate = true;
     this._needViewUpdate = true;
     this._id = id;
     this._text = text;
     this._type = type;
     this._scene = scene;
+    this._addr = addr;
   }
 
   // calls by adjacent objects, in this method internal state should be updated
@@ -73,6 +75,10 @@ export abstract class SCgObject {
     return this._text;
   }
 
+  get addr(): ScAddr {
+    return this._addr;
+  }
+
   set text(newText: string) {
     this._text = newText;
     this.requestViewUpdate();
@@ -103,8 +109,8 @@ export abstract class SCgPointObject extends SCgObject {
   private _pos: Vector2;
   private _scale: number;
 
-  constructor(id: number, text: string, type: ScType, scene: SCgScene) {
-    super(id, text, type, scene);
+  constructor(id: number, text: string, type: ScType, scene: SCgScene, addr?: ScAddr) {
+    super(id, text, type, scene, addr);
 
     this._pos = new Vector2(0, 0);
     this._scale = 1.0;
@@ -131,8 +137,8 @@ export abstract class SCgPointObject extends SCgObject {
 
 export class SCgNode extends SCgPointObject {
 
-  constructor(id: number, text: string, type: ScType, scene: SCgScene) {
-    super(id, text, type, scene);
+  constructor(id: number, text: string, type: ScType, scene: SCgScene, addr?: ScAddr) {
+    super(id, text, type, scene, addr);
 
     if (!type.isNode())
       throw "You should use node types there";
@@ -160,8 +166,8 @@ export class SCgNode extends SCgPointObject {
 abstract class SCgLineObject extends SCgObject {
   private _points: Vector2[];
 
-  constructor(id: number, text: string, type: ScType, scene: SCgScene) {
-    super(id, text, type, scene);
+  constructor(id: number, text: string, type: ScType, scene: SCgScene, addr?: ScAddr) {
+    super(id, text, type, scene, addr);
 
     this._points = [];
   }
@@ -186,8 +192,8 @@ export class SCgEdge extends SCgLineObject {
   private _srcRelPos: number;
   private _trgRelPos: number;
 
-  constructor(id: number, text: string, type: ScType, src: SCgObject, trg: SCgObject, scene: SCgScene) {
-    super(id, text, type, scene);
+  constructor(id: number, text: string, type: ScType, src: SCgObject, trg: SCgObject, scene: SCgScene, addr?: ScAddr) {
+    super(id, text, type, scene, addr);
 
     if (!type.isEdge())
       throw "You should use edge types there";
@@ -286,8 +292,8 @@ export class SCgLink extends SCgPointObject {
   private _container: any = null;
   private _containerWrap: any = null;
 
-  constructor(id: number, text: string, type: ScType, scene: SCgScene) {
-    super(id, text, type, scene);
+  constructor(id: number, text: string, type: ScType, scene: SCgScene, addr?: ScAddr) {
+    super(id, text, type, scene, addr);
 
     if (!type.isLink())
       throw "You should use link types there";

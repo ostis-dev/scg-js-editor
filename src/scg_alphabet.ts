@@ -212,7 +212,7 @@ export class SCgAlphabet {
     path += 'L' + trgPos.x + ',' + trgPos.y;
 
     let edgeType: ScType = edge.type;
-    const typeValue = edgeType.getValue();
+    const typeValue = edgeType.value;
     if (svg['sc_type'] != typeValue) {
       svg.attr('sc_type', typeValue);
 
