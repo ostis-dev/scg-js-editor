@@ -329,14 +329,25 @@ export class SCgLink extends SCgPointObject {
     return this._bounds;
   }
 
-  setContent(content: SCgContentProvider): void {
-    this._content = content;
-    this._content.link = this;
-    this._content.onChanged = function () {
+  setContent(content: SCgContentProvider | string): void {
+
+    let contentProvider: SCgContentProvider = null;
+
+    if (content instanceof SCgContentProvider) {
+      contentProvider = content;
+    } else if (content instanceof string) {
+      
+    }
+
+    if (contentProvider) {
+      this._content = contentProvider;
+      this._content.link = this;
+      this._content.onChanged = function () {
+        this.requestUpdate();
+        this.scene.viewUpdate();
+      }.bind(this);
       this.requestUpdate();
-      this.scene.viewUpdate();
-    }.bind(this);
-    this.requestUpdate();
+    }
   }
 
   // calls from render (do not call manualy)
