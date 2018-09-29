@@ -3,7 +3,8 @@
     "compilerOptions": {
         "target": "es6",
         "module": "commonjs",
-        "outDir": "build",
+        "outDir": "./build/lib/",
+        "declaration": true,
         "sourceMap": true,
         "experimentalDecorators": true
     },

@@ -1,8 +1,9 @@
 {
-  "name": "scg-js",
-  "version": "0.1.0",
+  "name": "@ostis/scg-js-editor",
+  "version": "0.2.1",
   "description": "Implementation of scg-language tools for web",
   "main": "index.js",
+  "types": "build/lib/index.d.ts",
   "scripts": {
     "test": "test",
     "build": "webpack --progress --colors",
@@ -23,8 +24,8 @@
     "@types/d3": "^4.11.0",
     "@types/jquery": "^2.0.48",
     "awesome-typescript-loader": "^3.2.3",
-    "ejs": "^2.5.7",
-    "express": "^4.16.2",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
     "jquery": "^3.2.1",
     "source-map-loader": "^0.2.3",
     "ts-loader": "^2.3.7",

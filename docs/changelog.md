@@ -1,6 +1,9 @@
+## 0.2.x (Current)
+- Graph force layout support
+- Support SCgStruct
 
-## 0.1.0 (Current)
+## 0.1.x 
 
-- Implement GWF file loading
-- Implement SCgLink support
-- Implement SCgViewer
+- Support GWF file loading
+- Sopport SCgLink
+- Add SCgViewer

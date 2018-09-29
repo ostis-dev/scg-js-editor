@@ -335,9 +335,10 @@ export class SCgLink extends SCgPointObject {
 
     if (content instanceof SCgContentProvider) {
       contentProvider = content;
-    } else if (content instanceof string) {
-      
     }
+    // } else if (content instanceof string) {
+      
+    // }
 
     if (contentProvider) {
       this._content = contentProvider;
