@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="description" content="A set of complementary tools to ReactJS.">
+        <meta name="author" content="React Toolbox team">
+        <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1" media="(device-height: 568px)">
+        <meta name="apple-mobile-web-app-title" content="Material Console">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="HandheldFriendly" content="True">
+        <meta http-equiv="cleartype" content="on">
+        <title><%= test_name%></title>
+
+        <link href="/static/test.css" rel="stylesheet">
+        <script src="/static/scg.js"></script>
+        <script src="/static/test.js"></script>
+        <script src="/test/get/<%= test_name %>"></script>
+    </head>
+    <body>
+        <div class="test-list-container">
+            <div class="test-select">
+                <select id="test-selector-list"></select>
+            </div>
+        </div>
+
+        <div id="test-wrap-container" class="test-wrap-container">       
+        </div>
+
+        <script>
+            window.tests = {};
+            window.test_name = '<%= test_name%>';
+
+            function loadTest(testName) {
+                const container = document.getElementById('test-wrap-container');
+                const id = 'test-container-' + testName;
+                const testContainer = document.createElement('div');
+                testContainer.className = 'test-container';
+                testContainer.id = id;
+
+                container.appendChild(testContainer);
+
+                test_<%= test_name %>(testContainer);
+            }
+
+            function showTest(testName) {
+                document.querySelectorAll('.test-container').forEach(function(el) {
+                    if (el.id == 'test-container-' + testName) {
+                        el.classList.remove('hidden');
+                    } else {
+                        el.classList.add('hidden');
+                    }
+                });
+            }
+
+            document.addEventListener("DOMContentLoaded", function(event) { 
+                httpGetAsync('/test/list', function(data) {
+                    let files = JSON.parse(data);
+                    const select = document.getElementById('test-selector-list');
+                    for (let i = 0; i < files.length; ++i) {
+                        let option = document.createElement('option');
+                        option.value = files[i];
+                        option.text = files[i];
+                        select.appendChild(option);
+                    }
+
+                    loadTest(window.test_name);
+                    select.value = window.test_name;
+
+                    select.onchange = function() {
+                        window.open('/test/' + this.options[this.selectedIndex].value, '_self');
+                    };
+                });
+            });
+        </script>
+    </body>
+</html>

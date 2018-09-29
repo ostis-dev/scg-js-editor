@@ -1,0 +1,10 @@
+node_modules/
+test/
+build/*.bundle.js
+
+.gitignore
+tsconfig.json
+postcss.config.js
+webpack.config.js
+*.sh
+*.bat
