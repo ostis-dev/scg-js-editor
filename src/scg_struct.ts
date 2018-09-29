@@ -16,15 +16,18 @@ export class SCgStruct {
   private _scene: SCgScene = null;
   private _queue: SCgObjectInfo[] = [];
 
-  constructor(_scene: SCgScene) {
+  constructor() {
+  }
+
+  public set scene(_scene: SCgScene) {
     this._scene = _scene;
   }
 
-  public addObject(obj: SCgObjectInfo): void {
+  public AddObject(obj: SCgObjectInfo): void {
     this._queue.push(obj);
   }
 
-  public update() {
+  public Update() {
     // construct everything that is possible
     let queue = this._queue;
     queue.reverse();

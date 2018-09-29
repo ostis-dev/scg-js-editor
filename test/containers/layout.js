@@ -32,8 +32,8 @@ function test_layout(container) {
       window.viewer = new SCgViewer('gwf-content');
       function loadFile(fileName) {
           httpGetAsync('/gwf/file/layout/' + fileName, function(data) {
-              window.viewer.loadFromData(data);
-              window.viewer.layout();
+              window.viewer.LoadFromData(data);
+              window.viewer.Layout();
           });
       }
       select.onchange = function(){

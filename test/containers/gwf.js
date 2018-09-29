@@ -32,8 +32,8 @@ function test_gwf(container) {
         window.viewer = new SCgViewer('gwf-content');
         function loadFile(fileName) {
             httpGetAsync('/gwf/file/' + fileName, function(data) {
-                window.viewer.loadFromData(data);
-                window.viewer.fitSizeToContent();
+                window.viewer.LoadFromData(data);
+                window.viewer.FitSizeToContent();
             });
         }
         select.onchange = function(){

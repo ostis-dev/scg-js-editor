@@ -1,6 +1,6 @@
 {
   "name": "@ostis/scg-js-editor",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Implementation of scg-language tools for web",
   "main": "build/scg.js",
   "types": "build/lib/index.d.ts",
