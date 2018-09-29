@@ -1,11 +1,12 @@
 {
   "name": "@ostis/scg-js-editor",
-  "version": "0.2.1",
+  "version": "0.2.5",
   "description": "Implementation of scg-language tools for web",
   "main": "index.js",
   "types": "build/lib/index.d.ts",
   "scripts": {
     "test": "test",
+    "prepublish": "npm run build",
     "build": "webpack --progress --colors",
     "dev": "tsc -watch -p ./",
     "watch": "webpack --progress --colors --watch"
