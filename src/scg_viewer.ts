@@ -10,7 +10,7 @@ import { SCgLayoutForce } from './layouts/scg_layout_force';
 import { SCgStruct } from './scg_struct';
 
 export class SCgViewer {
-  private _container: any;
+  private _container: HTMLElement = null;
 
   private _width: number;
   private _height: number;
@@ -24,12 +24,19 @@ export class SCgViewer {
     this._width = this._container.clientWidth;
     this._height = this._container.clientHeight;
 
+    this.Recreate();
+  }
+
+  private Recreate() {
+
+    this._container.innerHTML = '';
+
     this._scene = new SCgScene();
-    this._render = new SCgRender(id, this._scene);
+    this._render = new SCgRender(this._container.id, this._scene);
     this._scene.render = this._render;
   }
 
-  loadFromData(data: string, format = 'gwf') {
+  public LoadFromData(data: string, format = 'gwf') {
     if (format === 'gwf') {
       const loader = new SCgLoaderGWF();
       this._scene = loader.load(data);
@@ -40,15 +47,17 @@ export class SCgViewer {
     }
   }
 
-  getStruct() : SCgStruct {
-    return this._scene.struct;
+  public SetStruct(newStruct: SCgStruct) {
+    this.Recreate();
+    newStruct.scene = this._render.scene;
+    newStruct.Update();
   }
 
-  fitSizeToContent() {
+  public FitSizeToContent() {
     this._render.fitSizeToContent();
   }
 
-  layout() : void {
+  public Layout() : void {
     const layout: SCgLayoutForce = new SCgLayoutForce(this._scene);
     layout.start();
   }

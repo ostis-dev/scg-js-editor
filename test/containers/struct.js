@@ -113,10 +113,11 @@ function test_struct(container) {
 
   data = makeData();
   let viewer = new SCgViewer('struct-content');
-  let struct = viewer.getStruct();
+  let struct = new SCgStruct();
   for (var i = 0; i < data.length; ++i) {
-    struct.addObject(data[i]);
+    struct.AddObject(data[i]);
   }
-  struct.update();
-  viewer.layout();
+  viewer.SetStruct(struct);
+  struct.Update();
+  viewer.Layout();
 }

@@ -14,13 +14,11 @@ export class SCgScene {
   private _links: SCgLink[] = [];
   private _render: SCgRender = null;
   private _objectsByAddr: Map<number, SCgObject> = new Map<number, SCgObject>();
-  private _struct: SCgStruct = null;
 
   private _requestUpdate: number = 0;
   private _requestUpdateCallback: UpdateCallback = null;
 
   constructor() {
-    this._struct = new SCgStruct(this);
   }
 
   public onDestroy() {
@@ -58,10 +56,6 @@ export class SCgScene {
       this._objectsByAddr.set(addr.value, newLink);
       
     return newLink;
-  }
-
-  get struct() : SCgStruct {
-    return this._struct;
   }
 
   get render(): SCgRender {
