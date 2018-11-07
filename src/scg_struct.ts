@@ -1,6 +1,7 @@
 import { SCgScene } from './scg_scene';
 import { ScType, ScAddr } from './scg_types';
-import { SCgObject } from './scg_object';
+import { SCgObject, SCgLink } from './scg_object';
+import { SCgContentHtmlProvider } from './scg_content_provider';
 
 export interface SCgObjectInfo {
   addr: ScAddr,
@@ -50,9 +51,13 @@ export class SCgStruct {
           this._scene.createNode(obj.type, obj.alias, obj.addr);
           added = true;
         } else if (obj.type.isLink()) {
-          this._scene.createLink(obj.type, obj.alias, obj.addr);
+          const link: SCgLink = this._scene.createLink(obj.type, obj.alias, obj.addr);
+
+          const provider: SCgContentHtmlProvider = new SCgContentHtmlProvider();
+          provider.setData(obj.content, 'text/html');
+          link.setContent(provider);
+
           added = true;
-          // TODO: set content
         } else if (obj.type.isEdge()) {
           // get source and target elements
           const src: SCgObject = this._scene.objectByAddr(obj.src);

@@ -123,7 +123,7 @@ export class SCgLoaderGWF extends SCgLoader {
             break;
         };
         if (provider) {
-          provider.setBase64Data(data, mime);
+          provider.setData(data, mime);
           link.setContent(provider);
         }
 
