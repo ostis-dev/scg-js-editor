@@ -79,7 +79,7 @@ function makeData() {
     src: null,
     trg: null,
     alias: null,
-    content: 'test'
+    content: 't<b>e</b><i>s</i>t'
   });
 
   // edge 8

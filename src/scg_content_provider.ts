@@ -30,7 +30,7 @@ export abstract class SCgContentProvider {
   }
 
   abstract getContentSize(): Vector2;
-  abstract setBase64Data(data: string, mime?: string);
+  abstract setData(data: string, mime?: string);
   abstract setContainer(container: any): void;
 }
 
@@ -50,7 +50,7 @@ export abstract class SCgContentCommonProvider extends SCgContentProvider {
     return this._size;
   }
 
-  setBase64Data(data: string, mime?: string) {
+  setData(data: string, mime?: string) {
 
     let self: SCgContentCommonProvider = this;
     this._container = document.createElement(this._tag);
