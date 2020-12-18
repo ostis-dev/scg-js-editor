@@ -1,4 +1,9 @@
-## 0.2.x (Current)
+## 0.3.x (Current)
+
+- Update dependencies
+
+## 0.2.x
+
 - Graph force layout support
 - Support SCgStruct
 - Support link content in SCgStruct

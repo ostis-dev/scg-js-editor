@@ -6,5 +6,7 @@ build/*.bundle.js
 tsconfig.json
 postcss.config.js
 webpack.config.js
-*.sh
-*.bat
+
+package-lock.json
+yarn.*
+*.log

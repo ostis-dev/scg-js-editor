@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { D3Selection } from './scg_types';
 import { SCgAlphabet } from './scg_alphabet';
 import { SCgScene } from './scg_scene';
-import { SCgObject, SCgEdge, SCgNode, SCgLink } from './scg_object';
+import { SCgLink } from './scg_object';
 import { Vector2, Rect } from './scg_math';
 
 function applyContainerStyle(container: D3Selection) {
@@ -109,19 +109,15 @@ export class SCgRender {
   }
 
   private onMouseMove() {
-    const pos = d3.mouse(this._container);
   }
 
   private onMouseDown() {
-    const pos = d3.mouse(this._container);
   }
 
   private onMouseUp() {
-    const pos = d3.mouse(this._container);
   }
 
   private onMouseDoubleClick() {
-    const pos = d3.mouse(this._container);
   }
 
   public update() {
